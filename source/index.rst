@@ -8,15 +8,16 @@
 ===============================================
 
 
-.. toctree::
-   :maxdepth: 1
-
-   c0_foreward/foreward.rst
+.. image::  _static/images/ecs_cover.png
+  :scale: 40%
+  :align: center
 
 ---------------------------------------------
 
+前言
+---------------------------------------------
 
-.. image::  _static/images/ecs_cover.png
+.. image::  _static/images/ecs_foreward.png
   :scale: 40%
   :align: center
 

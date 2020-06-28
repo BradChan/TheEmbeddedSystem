@@ -10,9 +10,11 @@
    :maxdepth: 1
 
    uart.rst
+   uart_communication.rst
    uart_protocol.rst
    rs485.rst
    summary.rst
+   problems.rst
 
 
 

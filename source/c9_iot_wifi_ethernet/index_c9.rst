@@ -11,9 +11,11 @@
 
    iot.rst
    wifi.rst
+   _4g.rst
    ethernet.rst
    mqtt.rst
    summary.rst
+   problems.rst
 
 
 

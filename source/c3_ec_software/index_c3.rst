@@ -1,5 +1,5 @@
 ============================
-第3章 嵌入式计算机软件
+第3章 嵌入式系统软件
 ============================
 
 
@@ -15,6 +15,7 @@
    arduino_ide.rst
    create_arduino_board.rst
    summary.rst
+   problems.rst
 
 
 

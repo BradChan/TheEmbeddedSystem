@@ -1,5 +1,5 @@
 ============================
-第2章 嵌入式计算机体系结构
+第2章 嵌入式系统体系结构
 ============================
 
 
@@ -17,6 +17,7 @@
    system_power.rst
    system_clk_reset.rst
    summary.rst
+   problems.rst
 
 
 

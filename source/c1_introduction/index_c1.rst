@@ -15,6 +15,7 @@
    dev_ec_hardware.rst
    dev_ec_software.rst
    summary.rst
+   problems.rst
 
 
 

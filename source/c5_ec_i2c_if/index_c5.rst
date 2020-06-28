@@ -10,9 +10,11 @@
    :maxdepth: 1
 
    i2c.rst
-   i2c_slvae.rst
+   i2c_slave.rst
    i2c_master.rst
+   i2c_if_application.rst
    summary.rst
+   problems.rst
 
 
 

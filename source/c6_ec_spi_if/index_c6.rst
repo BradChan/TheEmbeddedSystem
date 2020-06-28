@@ -10,9 +10,11 @@
    :maxdepth: 1
 
    spi.rst
-   spi_slvae.rst
+   spi_slave.rst
    spi_master.rst
+   spi_if_application.rst
    summary.rst
+   problems.rst
 
 
 

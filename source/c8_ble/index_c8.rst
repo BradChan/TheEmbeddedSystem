@@ -13,6 +13,7 @@
    radio_communication.rst
    ble.rst
    summary.rst
+   problems.rst
 
 
 

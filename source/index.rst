@@ -7,9 +7,14 @@
 嵌入式系统及应用
 ===============================================
 
+
+.. image::  _static/images/ecs_cover.png
+  :scale: 40%
+  :align: center
+
+
 .. toctree::
    :maxdepth: 1
-   :caption: 前言
 
    c0_foreward/foreward.rst
 
@@ -69,6 +74,12 @@
 
    c9_iot_wifi_ethernet/index_c9.rst
 
+--------------------------------------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   ca_references/index_ca.rst
 
 
 

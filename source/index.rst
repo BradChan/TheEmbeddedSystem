@@ -8,15 +8,18 @@
 ===============================================
 
 
-.. image::  _static/images/ecs_cover.png
-  :scale: 40%
-  :align: center
-
-
 .. toctree::
    :maxdepth: 1
 
    c0_foreward/foreward.rst
+
+---------------------------------------------
+
+
+.. image::  _static/images/ecs_cover.png
+  :scale: 40%
+  :align: center
+
 
 ---------------------------------------------
 

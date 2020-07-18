@@ -87,6 +87,8 @@ Ethernet、音视频等标准接口，将标准的输入/输出和网络类外�
   :scale: 30%
   :align: center
 
+图1.3 桌面计算机系统及其主板
+
 
 除了标准接口之外，计算机主板仍包含有复杂的电路，如图1.3右图所示。主板包含CPU插槽、内存插槽、显卡插槽、SATA硬盘插槽、
 通用扩展接口的PCI插槽，以及电源插座等，主板上最重要的组件是芯片组，俗称“北桥”和“南桥”，他们分别是连通CPU和内存、CPU和
@@ -120,14 +122,17 @@ CPU应该拥有完全兼容的引脚。存储器仅是内存，虽然BIOS也属�
   :scale: 40%
   :align: center
 
+图1.4 Ambiq Micro Apollo 3 Blue的扫描电镜图(来自Tech Insights)
+
+
 图1.4中的晶元扫描电镜图是一颗外形5x5x0.65mm的BGA封装的微控制器，该微控制器是Ambiq公司的Micro Apollo 3 Blue系列产品之一，
 CPU采用英国ARM半导体设计公司的Cortex M4F微内核，并使用台积电(TSMC)的40nm工艺生产线制造。Tech Insights根据扫描电镜图进一步
 给出该微控制器上的主要功能单元的尺寸和占晶元的比例，参加表1.1所示。
 
-
 .. image:: ../_static/images/c1/mcu_die_resource_table.jpg
   :scale: 50%
   :align: center
+
 
 为了更容易与桌面计算机主板的功能单元做对比，我们根据Ambiq公司的产品资料页绘制出Micro Apollo 3 Blue系列产品的功能框图，
 如图1.5所示。
@@ -136,6 +141,9 @@ CPU采用英国ARM半导体设计公司的Cortex M4F微内核，并使用台积�
 .. image:: ../_static/images/c1/mcu_functional_unit.jpg
   :scale: 40%
   :align: center
+
+图1.5 Ambiq Micro Apollo 3 Blue的功能单元
+
 
 根据表1.4，微控制器内部的CPU、存储器(含Flash EEPROM和SRAM)占整个晶元的69%，对应图1.5中左上角的两个部分：MCU和存储器。
 
@@ -168,7 +176,10 @@ CPU的0.1% (Intel i7系列CPU的功耗约83W，而大多数微控制器的整体
 ------------------------
 
 想象你现在有一个任务：使用Ambiq的Micro Apollo 3 Blue微控制器设计一个运动手环，用来记录我们一天内的运动轨迹、步数。
-你目前仅有一颗集成电路级别的“主板”——微控制器，如何实现一个完整的运动手环呢？
+你目前仅有一颗集成电路级别的“主板”——微控制器，如何实现一个完整的运动手环呢？这的确与你拿到一块桌面计算机主板到组装一台
+完整的桌面计算机的工作完全不同。
+
+-------------------------
 
 
 

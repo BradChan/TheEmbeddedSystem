@@ -179,33 +179,78 @@ ARM Cortex-M系列微内核中的特殊外设被ARM称作私有外设，如SysTi
 
 计算机系统资源的“一切皆地址”，ARM Cortex-M系列微内核将系统的全部资源映射到4GB空间内，我们在编程时使用指令将某个输入外设的对应存储器
 地址单元的内容加载到CPU内核的某个寄存器中，即外设的读操作，将CPU内核的某个寄存器内容更新到某个输出外设的对应存储器地址单元中，即外设
-的写操作。ARM Cortex-M系列微内核属于典型的Load-Stroe指令集，即任何操作都必须在CPU内核的寄存器间进行，而且所有外设都没有Cache，
+的写操作。ARM Cortex-M系列微内核属于典型的Load-Stroe架构类型，即任何操作都必须在CPU内核的寄存器间进行，而且所有外设都没有Cache，
 任何的外设操作都被统一为Load(加载)和Store(存储)操作。
+
+ARM Cortex-M的CPU内核中有多少个寄存器可用呢？仅有16个(物理上是17个)32位寄存器！分别称作R0, R1, .., R15。此外，ARM Cortex-M
+还有几个特殊寄存器，包括3个程序状态寄存器、3个中断/异常屏蔽寄存器和1个控制寄存器。图图2.10所示。
+
+
+.. image:: ../_static/images/c2/arm_cortex-m_registers.png
+  :scale: 30%
+  :align: center
+
+图2.10  ARM Cortex-M的寄存器
+
+R0～R7可以被16位Thmub指令操作也可以被32位的ARM指令操作，但R8~R12只能由ARM指令操作。R13是堆栈指针寄存器，ARM Cortex-M在物理上有
+两个堆栈指针寄存器：MSP(主堆栈指针)和PSP(进程堆栈指针)，任何时候R13到底对应物理上的那个寄存器由CONTROL(控制)寄存器所控制。两个堆栈
+指针的结构是为了满足运行操作系统和用户进程的需要。R14是连接寄存器(LR)，用于存储子程序或函数的返回地址。R15是程序计数器(PC)，读R15将
+得到“当前正在执行的指令存储地址+4”。
+
+读取程序状态寄存器将会得到当前指令的执行结果，如是否溢出、是否进位等，设置控制寄存器将会改变系统CPU的执行模式，如启用FPU处理浮点数等。
+关于ARM Cortex-M的详细寄存器介绍请参考 [7]_ 和 [8]_ 的相关章节内容。
 
 -------------------------
 
 与其他CPU体系架构相比，尤其CISC(复杂指令集的CPU)和哈佛结构的CPU，ARM Cortex-M系列的架构和系统资源管理更简洁，所以其指令集也更简单。
-图2.10给出ARM Cortex-M支持的全部指令集。
+图2.11给出ARM Cortex-M支持的全部指令集。
 
 .. image:: ../_static/images/c2/arm_cortex-m_is.jpg
   :scale: 30%
   :align: center
 
-图2.10  ARM Cortex-M指令集(仅ARMv6和ARMv7-M)
+图2.11  ARM Cortex-M指令集(仅ARMv6和ARMv7-M)
 
-上图中并不包括ARMv8-M支持的指令，如果需要查看这些指令，请参考“ARM Cortex-M入门”文档 [7]_ 。事实上，我们在使用ARM Cortex-M系列MCU
+上图中并不包括ARMv8-M支持的指令，如果需要查看这些指令，请参考“ARM Cortex-M入门”文档 [9]_ 。事实上，我们在使用ARM Cortex-M系列MCU
 开发嵌入式系统的过程中并不会直接使用其指令集，C、Python等是最常用的嵌入式系统软件的编程语言。从指令集可以看出，ARM Cortex-M系列的不同
 型号微内核之间是向下兼容的，如M0+的硬件无关的二进制代码能够直接在M3上执行。
 
 所谓与硬件有关的代码是，某个特定的MCU的特定外设所使用的存储器地址空间与其他MCU很可能完全不同。硬件无关的代码，如数据处理算法(排序、查找)等，
 只是对一段数据进行处理并给出结果。
 
+-------------------------
+
+为了更好地理解ARM Cortex-M体系架构，我们需要对其内部互联总线系统稍作了解。在本节前面的很多图中都能看到AHB、APB等总线，他们都属于AMBA标准。
+AMBA(Advanced Microcontroller Bus Architecture)最初由ARM定义用于数字半导体产品设计，于1996年公开并成为半导体设计领域的一类片上组件
+互联协议标准。AMBA标准已经被多次更新和迭代，如表2.2所示。
+
+表2.2  AMBA标准总线协议类及其演变
+
+.. image:: ../_static/images/c2/arm_amba_bus.jpg
+  :scale: 30%
+  :align: center
 
 
+虽然AMBA只是应用于芯片内部的功能单元之间互联的总线，但与其他计算机系统总线并无本质区别，高速的、宽位的总线能够提供更高的数据吞吐量，
+譬如AHB(先进的高性能)总线适合于CPU内核与存储器、CPU内核与USB等高速外设之间互联，APB(先进外设总线)总线组合AHB-APB桥用于将各类
+外设间接地连接到CPU内核。就像桌面计算机的主板一样，CPU和Cache控制器通过北桥(并行数据总线桥)与DRAM互联，CPU通过南桥与各种不同速度的
+外设互联。计算机主板上的各种总线都是一组物理上的信号线和电气的、时序的规范所定义，但MCU芯片内部的互联总线无法用肉眼观察到。
 
+每一个MCU芯片都有若干个I/O引脚，极少数片上外设不需要引脚，如定时器等不需要占用芯片的外部引脚，其他外设都需要通过I/O引脚与MCU外部
+的功能单元或电子元件连接。譬如，当某个嵌入式系统需要使用一种小型的LCD显示器时，我们必须占用MCU的几个I/O引脚和内部的SPI或I2C外设
+接口将显示器电路单元CPU连接起来，然后编程将某些寄存器中的数据写入LCD显示器的RAM中，这样的接口电路设计实际上是将LCD的RAM写端口映射
+到嵌入式系统的SPI或I2C外设的某个或某些存储器空间。我们将在第5章和第6章中学习这样的接口电路设计和存储器映射方法。
 
 -------------------------
 
+ARM体系架构是非常成熟的，与之相关的参考书非常多，如果需要深入了解ARM Cortex-M系列体系架构的片上系统(SoC)设计，推荐阅读 [10]_ 参考书，
+本节的内容仅仅是对ARM Cortex-M系列微内核的体系架构的一种简要综述。
+
+参考书 [7]_ 将帮助我们深入了解ARM Cortex-M0和M0+两种微内核的基本架构和原理，以及指令集、编程模式和软件设计相关的知识，
+参考书 [8]_ 是关于ARM Cortex-M3和M4两种微内核的。
+
+
+-------------------------
 
 
 参考文献：
@@ -217,5 +262,8 @@ ARM Cortex-M系列微内核中的特殊外设被ARM称作私有外设，如SysTi
 .. [4] www.st.com
 .. [5] www.ti.com
 .. [6] https://www.nxp.com/products/processors-and-microcontrollers/arm-microcontrollers/i-mx-rt-crossover-mcus:IMX-RT-SERIES
-.. [7] ARM Cortex-M for Beginners, https://community.arm.com/cfs-file/__key/communityserver-blogs-components-weblogfiles/00-00-00-37-85/Cortex_2D00_M-for-Beginners-_2D00_-2017_5F00_EN_5F00_v2.pdf
+.. [7] Joseph Yiu, The Definitive Guide to ARM Cortex-M0 and Cortex-M0+ Processors (2nd-Edition), Elsevier, 2015
+.. [8] Joseph Yiu, The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors (3rd-Edition), Elsevier, 2013
+.. [9] ARM Cortex-M for Beginners, https://community.arm.com/cfs-file/__key/communityserver-blogs-components-weblogfiles/00-00-00-37-85/Cortex_2D00_M-for-Beginners-_2D00_-2017_5F00_EN_5F00_v2.pdf
+.. [10] Joseph Yiu, System-on-Chip Design with ARM Cortex-M processors, ARM Education Media, 2019
 

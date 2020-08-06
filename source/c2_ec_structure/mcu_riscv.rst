@@ -81,10 +81,10 @@ RV32I仅有6类47条指令，而且所以指令都是32位长度，每一类指�
 
 图2.14  RISC-V ISA的一种CPU内核实现框图(lbex core)
 
-将ISA变成具体的CPU实现需要使用硬件设计工具，譬如lbex core使用SystemVerilog作为设计工具。使用硬件描述语言(HDL)编程来实现数字集成电路和CPU
-内核是重要工作，当然设计工具还必须支持仿真和模拟来验证设计，最后交给半导体制造商生产。SiFive、芯来科技、平头哥半导体等都是提供开源RISC-V ISA
-的标准微内核和订制化的内核设计服务。再回来看ARM的两种IP授权模式：ARM Cortex ISA授权模式和ARM Cortex IP授权模式。开源的RISC-V ISA体系架构
-只有设计IP授权模式。
+将ISA变成具体的CPU实现需要使用电子设计自动化软件(EDA)工具，譬如lbex core使用SystemVerilog作为设计工具。使用硬件描述语言
+(HDL)编程来实现数字集成电路和CPU内核是重要工作，当然设计工具还必须支持仿真和模拟来验证设计，然后进行电路模拟和验证，最后交给半导体制造商生产。
+SiFive、芯来科技、平头哥半导体等都是提供开源RISC-V ISA的标准微内核和订制化的内核设计服务。再回来看ARM的两种IP授权模式：ARM Cortex ISA
+授权模式和ARM Cortex IP授权模式。开源的RISC-V ISA体系架构只有设计IP授权模式。
 
 值得一提的是著名硬盘供应商——美国的西部数据公司(WDC/Western Digital Corporation) [9]_ 通过CHIPS Alliance发布三种RISC-V体系的开源的
 微内核设计 [10]_ ：EH1、EH2和EL2等，EH1和EH2分别采用单路和双路9级流水线且多方面的性能都超过ARM Cortex-A15，EL2是面向嵌入式系统应用场景。
@@ -108,11 +108,14 @@ Intel、ARM等商业微内核的垄断地位，更多企业将会基于此开源
 略有区别：SAMD21系列和nRF52840的USB设备都是连接在APB上，而GD32VF103系列的USB直接与AHB连接。
 
 显然，无论采用那种CPU架构体系，MCU的CPU内核(含中断控制器等)、片上数据和程序存储器、高速总线接口(含Cache等)、片上高速外设、低速外设总线接口(含总线桥)、
-片上低速外设等必要组件及其互联总线都是存在的，如果采用开放的互联总线标准，最终这些MCU的区别都是一些小细节和外设的多少、I/O引脚的多少。
+片上低速外设等功能组件及其互联总线都是必要的，如果采用开放的互联总线标准，最终这些MCU的区别都是一些小细节和外设的多少、I/O引脚的多少。
+
+由于RISC-V ISA并没有具体的存储器映射规则，每一种微内核的实现完全由设计者确定，GD32VF103系列MCU的存储器映射与ARM Cortex-M非常相似，
+这大概源于北京兆易创新已获得ARM Cortex-M3/M4/M23微内核IP的授权，具体的MCU产品细节详见该公司的产品页面 [11]_ 。
 
 -------------------------
 
-与历史悠久的、成熟的ARM Cortex ISA相比较，RISC ISA年轻、开放，但是从ISA到CPU微内核的具体实现还有很多设计工作，甚至还需要掌握半导体的制造
+与成熟的ARM Cortex ISA相比较，RISC ISA年轻、开放，但是从ISA到CPU微内核的具体实现还有很多设计工作，甚至还需要掌握半导体的制造
 工艺才能设计出性能、功耗、价格等方面达到最优的MCU芯片产品。
 
 任何CPU架构体系都需要软件生态的支持，包括工具链、中间件和软件库等，RISC-V体系的软件生态还很弱，需要更多从业者作出大量贡献才可能逐步成熟。
@@ -132,3 +135,4 @@ Intel、ARM等商业微内核的垄断地位，更多企业将会基于此开源
 .. [8] https://ibex-core.readthedocs.io/en/latest/introduction.html
 .. [9] https://www.westerndigital.com/company/innovations/risc-v
 .. [10] https://github.com/chipsalliance
+.. [11] http://www.gd32mcu.com/cn/product

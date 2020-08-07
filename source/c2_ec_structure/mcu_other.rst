@@ -83,7 +83,7 @@ FlashROM且最大容量达16MB，以及QSPI接口的PSRAM(伪静态RAM)最大容
 
 .. Note::  SoC、MCU、MPU、CPU
 
-  我们把ESP32系列产品称作SoC，即片上系统，而不是MCU或CPU。这是为什么呢？望文生义就可以区分他们，虽然现今的MCU与SoC的界线已经非常模糊。请注意区分这些概念。
+  我们把ESP32系列产品称作SoC，即片上系统，而不是MCU或CPU。这是为什么呢？望文生义就可以区分他们，虽然现今的MCU与SoC的界线已经非常模糊。请注意区分这些术语。
 
 与ARM Cortex和RISC-V等相比，ESP32使用的可配置的Xtensa内核是非常小众，甚至有人认为是ESP8266和ESP32让Xtensa内核为外界所知，过去受Tensilica商业模式
 的影响。ESP8266和ESP32系列的成功得益于乐鑫自主研发的软件平台——ESP-IDF，即ESP集成开发框架 [8]_ 。
@@ -103,7 +103,7 @@ IBM的POWER(Performance Optimization With Enhanced RISC)体系架构也是四大
 
 -------------------------
 
-参考文献：
+参考文献:
 ::
 
 .. [1] https://ip.cadence.com/knowledgecenter/know-ten/dataplane-design

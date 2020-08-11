@@ -24,7 +24,7 @@
 
 图2.25  嵌入式系统CPU的工作状态和工作模式
 
-抛开调试状态，在正常的指令执行状态中，绝大多数嵌入式系统CPU包含两个工作阶段：引导阶段和正常运行(主程序)阶段。
+调试状态仅仅是嵌入式软硬件开发阶段才需要的。抛开调试状态，在正常的指令执行状态中，绝大多数嵌入式系统CPU包含两个工作阶段：引导阶段和正常运行(主程序)阶段。
 
 引导阶段的程序被称作“Bootloader”，这一小片程序将执行一些必要的硬件单元初始化操作，如RAM初始化操作、外部ROM存储器接口初始化操作等，为执行主程序做好准备工作。
 在Bootloader，嵌入式系统CPU可能处于两种工作模式：特权的线程模式和异常处理模式。“特权的线程”指的是，这个期间可以用指令访问系统内所有资源。“异常处理”包括软件
@@ -47,9 +47,44 @@ CPU在执行用户应用程序/非特权的线程时不能直接访问系统资�
 
 --------------------------
 
-如何进入Bootloader？如何退出Bootloader进入主程序？
+当嵌入式系统上电或复位后，Bootloader阶段是可选择的，最简单的无OS嵌入式系统CPU只需要一些初始化操作之后立即就进入特权的线程模式，当发生异常或中断时则根据当时的条件
+执行异常处理或中断服务程序，然后返回特权的线程模式。图2.25种所有虚线框的部分都是可选择的。那么如何选择进入或不进入Bootloader呢？支持可先泽进入或不进入Bootloader的
+MCU一般都带有Booting选项控制引脚，譬如ESP32的GPIO0和GPIO2引脚、STM32F401的Boot0和Boot1引脚等都是专用于Booting。这种MCU的上电或复位期间将会把Booting选项
+控制引脚的状态保存下来，复位完成后将根据这些引脚状态确定是否进入Bootloader。
 
+ESP32、STM32F401、GD32VF103等三种特殊MCU的引导选项及复位期间的控制引脚状态之间关系见图2.26所示。STM32F401和GD32VF103两种MCU的Code分区的前1MB地址空间
+是片上主闪存(Main Memory)、系统存储器(即Bootloader)和SRAM的别名区，复位期间Boot1和Boot0两个引脚的状态决定复位后的别名区与三种物理存储器种的一个对齐，
+并从对应的物理存储器开始取指令。ARM Cortex-M系列微内核的CPU被复位后，其程序计数器(PC，即R15)的值从Code分区0x00000004地址单元加载(务必注意，是将Code分区
+的这个地址单元内容加载到PC)，这一设计很容易从硬件设计上实现按配置从指定区域开始执行程序。这一点，GD32VF103几乎与ARM Cortex-M系列微内核的CPU完全一致。
 
+然而，ESP32的引导过程却更复杂。严格地说，ESP32的Bootloader有两种：DFU Bootloader和正常启动的初始化操作的Bootloader。DFU Bootloader在半导体生产过程
+种就已固化在Internal ROM中，芯片上电或复位后将根据GPIO0和GPIO2两个引导选项控制引脚在复位期间的状态确定是否进入这个Bootloader，一旦启动这个Bootloader则
+等待ESP-Tools软件与之通讯，并将最新版DFU Bootloader下载带Internal SRAM中然后重新初始化UART端口并与ESP-Tools软件通讯下载程序(或更新固件)。如果复位时
+GPIO0为高电平，复位后将开始正常启动的初始化操作，首先初始化QSPI接口并从QSPI FlashROM的0x00001000地址单元开始加载程序到ISRAM(指令SRAM)中，这一阶段的
+Bootlaoder程序也是固化在片内ROM(用户不能修改)，然后从ISRAM中执行这个Bootloader开始加载分区表并根据分区表确定主程序的初始地址，最后从这一地址开始取指令
+即启动主程序。更详细的ESP32引导过程和初始化操作请参加上海乐鑫的官方论坛 [1]_ 和相关文档。关于DFU Bootloader与ESP-Tools软件之间的通讯协议详见 [2]_ 。
+从QSPI FlashROM的0x00001000地址单元开始所加载的并从ISRAM中执行的Bootloader是用户可编程的，虽然加载分区表、定位主程序首地址等初始化操作是这个Bootloader
+的默认功能，用户可以增加一些系统必需的其他初始化操作。注意，此处所用的地址编码仅仅是FlashROM芯片从0地址开始的，与ESP32的4GB地址空间编码无关，图2.26给出
+ESP32通过QSPI外扩的NOR型FlashROM存储器的分区细节，最前面的64KB已经被乐鑫详细地定义，其他存储单元的用法和分区容量由用户通过分区表来指定。
+
+.. image:: ../_static/images/c2/esp32_qspiflashrom_usage.jpg
+  :scale: 25%
+  :align: center
+
+图2.26  ESP32外扩的QSPI FlashROM存储器分区
+
+前面的内容中，我们多次将ESP32称作SoC而不是MCU，主要因为ESP32的片上功能远超一般的MCU芯片，包括双核、MPU和MMU等。带有MMU(存储器管理单元)的计算机系统支持
+虚拟内存和物理内存之间映射所以能够运行Linux/Unix型OS。ESP32片外扩展的容量达16MB的FlashROM被映射到0x400C2000~0x40BFFFFF(仅11MB)地址空间，实际是
+由MMU来完成的。
+
+前面以ESP32、STM32F401、GD32VF103等三种MCU的引导选项及控制引脚之间关系说明从Bootloader到嵌入式系统主程序的启动过程，这些过程适合SAMD51和nRF52840吗?
+事实上，SAMD51、nRF52840和STM32F401都是ARM Cortex-M4F为CPU内核的MCU芯片，但是他们的Code分区设计存在明显的差异：SAMD51和nRF52840的Code分区的最前面
+1MB是主闪存，但STM32F401 Code分区最前面的1MB则是3个物理存储器分区(其中一个分区就是Bootloader)的别名区，如图2.22所示。这意味着，SAMD51和nRF52840是否
+需要Bootloader完全取决于系统的软件设计者。
+
+--------------------------
+
+综上所述，嵌入式系统从上电或复位直到用户主程序启动，期间的经历由半导体设计师和嵌入式系统的软硬件设计师来确定。
 
 
 
@@ -58,5 +93,5 @@ CPU在执行用户应用程序/非特权的线程时不能直接访问系统资�
 参考文献：
 ::
 
-
-.. [] https://github.com/espressif/esptool/wiki/Serial-Protocol
+.. [1] https://esp32.com/viewtopic.php?f=25&t=8030 
+.. [2] https://github.com/espressif/esptool/wiki/Serial-Protocol

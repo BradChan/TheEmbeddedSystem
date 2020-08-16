@@ -6,7 +6,8 @@
 开发的难点是算法和软件性能优化等，开发重点是API(应用程序接口)的应用，开发方法和开发环境非常成熟。但是，开发带有OS的嵌入式系统软件却完全不同。
 
 嵌入式系统软件可以使用的OS通常被称作嵌入式OS(Embedded OS)或RTOS(RealTime Operating System)，在OS环境运行的软件绝大多数都采用事件驱动的
-(Event Driven)风格，但使用RTOS的软件意味着某个事件发生所触发的任务必须在预定时间内完成(不是最快完成，而是在预定的截止时间之前完成)。
+(Event Driven)风格，但RTOS种类繁多且无统一的、标准的API，也没有统一的开发环境，很多RTOS仅支持几种MCU(目前没有完全通用的RTOS)。实时操作系统意味着，
+某个事件发生所触发的任务必须在预定时间内完成(不是最快完成，而是在预定的截止时间之前完成)。
 
 嵌入式OS都是多任务的(单任务的OS没有使用价值)，借助于OS的任务调度器(Task Scheduler)可以并行执行多个任务。带有RTOS的嵌入式系统软件模型如图3.1所示，
 系统启动后执行必要的初始化操作(如Bootloader)、RTOS初始化，然后创建多个任务并启动调度器，这些操作都是一次性执行的代码，RTOS调度器本身是一个无穷循环，
@@ -52,12 +53,36 @@ RTOS的实际使用情况咋样呢？图3.2是根据EETims杂志2020年初发布
 半免费的(即个人免费但企业非免费)QNX [6]_ 和低授权费的MQX [7]_ 的比例也很接近。
 
 很显然，完全免费且开源的RTOS非常受欢迎。注意，eLinux并不是实时的OS，适合PMD类计算机系统。FreeRTOS、TI-RTOS、uC/OS-x等属于免费完全开源的RTOS，
-他们的市场占有比例与使用难易度和通用性有关：FreeRTOS和uC/OS-x都是通用型RTOS，但后者使用难度略大于前者；TI-RTOS仅支持TI自己的MCU和DSP。
-
-前些年ARM公司为打造ARM Cortex-M系列MCU的生态系统而收购德国知名的IDE(集成开发环境)软件公司——Keil，并将RTX RTOS [8]_ 作为Keil IDE的一个独立扩展包，
-虽然RTX RTOS未上榜，作为ARM Cortex-M生态系统的一部分必有一定的市场份额。RT-Thread [9]_ 是国内的免费且开源的RTOS，也未上榜。
+他们的市场占有比例与使用难易度和通用性有关：FreeRTOS和uC/OS-x都是通用型RTOS，但后者使用难度略大于前者；TI-RTOS仅支持TI自己的MCU和DSP，
+DSP/BIOS应该是TI-RTOS的内核(在TI官网的名称是SYS/BIOS)。虽然ARM Keil的RTX RTOS [8]_ 和国产的RT-Thread [9]_ 等免费RTOS都未上榜，
+但他们拥有自己的大量用户。
 
 图中的所有RTOS都支持基本的时间片轮转调度和按任务优先级抢占调度模式，在RTOS初始化阶段通过编程来配置或编译前使用配置文件来选择模式。
+
+--------------------------
+
+初始化RTOS、创建任务、启动多任务调度器等是使用RTOS的最基本工作，使用RTOS开发嵌入式系统软件时我们一定会遇到共享资源和任务间通讯等高级问题。
+多个任务需要共享嵌入式系统的硬件资源(如内存、外设等)是很常见的，譬如两个任务都需要向同一个UART端口写入单行型字符串信息，如果这个共享资源处理不当，
+我们一定会发现一个字符串被另一个字符串分割的现象(相信这不是你想要的)。互斥(Mutual Exclusion)机制及其接口是RTOS解决共享资源问题的常规方法，
+需要使用共享资源的每一个任务必须对预先定义的互斥变量进行查询(如果被其他任务锁定则该任务将被挂起)、锁定(锁定成功即可使用共享资源)、(使用完毕立即)释放。
+任务间通讯问题出现在业务逻辑耦合的多任务软件设计过程种，譬如一个高优先级的任务A负责控制ADC按指定采样周期采集语音，另一个高优先级B的任务负责将
+采集的语音数据滤波后存入内存，还有一个低优先级的任务C负责将语音流数据通过网口发送至云端，任务A和任务B之间需要借助于通讯或共享内存来协作执行，
+任务C需要等待任务B的消息才会开始传送数据流，任务B必须根据任务C的传送进度决定是否能够继续保存语音数据(如果流数据存储空间是满的时候任务B需要暂停写内存)。
+队列、邮箱和信标等都是RTOS常用的任务间通讯方法，但不是所有RTOS都支持这些方法。更详细的RTOS知识请参考Jim Cooling [10]_ 和 [11]_ ，以及前文
+提到的RTOS的官网文档。 
+
+使用RTOS的嵌入式系统软件架构是啥样的呢？图3.3(a)和图3.3(b)分别给出通用型架构、FreeRTOS用于ARM Cortex-M的嵌入式系统软件架构。
+
+.. image:: ../_static/images/c3/rtos_based_es_software_structure.jpg
+  :scale: 30%
+  :align: center
+
+图3.3  基于RTOS的嵌入式系统软件架构
+
+
+
+
+
 
 
 --------------------------
@@ -74,3 +99,5 @@ RTOS的实际使用情况咋样呢？图3.2是根据EETims杂志2020年初发布
 .. [7] (MQX) https://www.nxp.com/design/software/embedded-software/mqx-software-solutions:MQX_HOME
 .. [8] (RTX RTOS) https://www2.keil.com/mdk5/cmsis/rtx
 .. [9] (RT-Thread) https://www.rt-thread.org/
+.. [10] Jim Cooling, Real-time Operating Systems Book 1: The Theory, (个人自主发行), 2019.8
+.. [11] Jim Cooling, Real-time Operating Systems Book 2: The Practice: Using STM Cube, FreeRTOS and the STM32 Discovery Board, (个人自主发行), 2017.12

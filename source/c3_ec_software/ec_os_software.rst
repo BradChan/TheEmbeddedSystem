@@ -19,6 +19,39 @@
 
 图3.1  多任务RTOS的模型
 
+使用RTOS编写嵌入式系统软件的(伪码)风格如下示例：
+
+.. code-block::  c
+  :linenos:
+
+    Task1 () {
+      // some of the initialization code for Task1 
+      while(1) {
+        // functional code for Task1 
+      }
+    }
+    Task2 () {
+      // some of the initialization code for Task2 
+      while(1) {
+        // functional code for Task2 
+      }
+    }
+    Task3 () {
+      // some of the initialization code for Task3 
+      while(1) {
+        // functional code for Task3 
+      }
+    }
+
+    main () {
+      // Initialize the system hardware
+      // initialize RTOS
+      xCreakTask(Task1); // creat the Task1, and apend it on the list of task 
+      xCreakTask(Task2); // creat the Task2, and apend it on the list of task 
+      xCreakTask(Task3); // creat the Task3, and apend it on the list of task 
+      vTaskStartScheduler(); // start the scheduler of RTOS, this is an endless loop
+    }
+
 任务调度器能够并行处理多任务的机制是，将CPU的时间分割为多个时间片并分配给已经创建的多个任务，每个任务占用CPU的一个时间片，当正在执行的任务的时间片
 消耗完毕时，调度器实施任务切换(即将正在执行的任务挂起，继续执行下一个任务)，每一个任务按分配的时间片占用CPU一定时间后被挂起，如此无穷地循环，
 让我们感觉多个任务被并行执行。其中，时间片的分割粒度由定时器的中断/溢出周期来决定，通过对定时器溢出周期的编程配置即可改变时间片粒度。
@@ -64,23 +97,38 @@ DSP/BIOS应该是TI-RTOS的内核(在TI官网的名称是SYS/BIOS)。虽然ARM K
 初始化RTOS、创建任务、启动多任务调度器等是使用RTOS的最基本工作，使用RTOS开发嵌入式系统软件时我们一定会遇到共享资源和任务间通讯等高级问题。
 多个任务需要共享嵌入式系统的硬件资源(如内存、外设等)是很常见的，譬如两个任务都需要向同一个UART端口写入单行型字符串信息，如果这个共享资源处理不当，
 我们一定会发现一个字符串被另一个字符串分割的现象(相信这不是你想要的)。互斥(Mutual Exclusion)机制及其接口是RTOS解决共享资源问题的常规方法，
-需要使用共享资源的每一个任务必须对预先定义的互斥变量进行查询(如果被其他任务锁定则该任务将被挂起)、锁定(锁定成功即可使用共享资源)、(使用完毕立即)释放。
+需要使用共享资源的每一个任务必须对预先定义的互斥变量进行查询(如果被其他任务锁定则该任务将被挂起)、锁定(锁定成功即可使用共享资源)、(使用完毕立即)释放等互斥访问共享资源的过程。
 任务间通讯问题出现在业务逻辑耦合的多任务软件设计过程种，譬如一个高优先级的任务A负责控制ADC按指定采样周期采集语音，另一个高优先级B的任务负责将
 采集的语音数据滤波后存入内存，还有一个低优先级的任务C负责将语音流数据通过网口发送至云端，任务A和任务B之间需要借助于通讯或共享内存来协作执行，
 任务C需要等待任务B的消息才会开始传送数据流，任务B必须根据任务C的传送进度决定是否能够继续保存语音数据(如果流数据存储空间是满的时候任务B需要暂停写内存)。
-队列、邮箱和信标等都是RTOS常用的任务间通讯方法，但不是所有RTOS都支持这些方法。更详细的RTOS知识请参考Jim Cooling [10]_ 和 [11]_ ，以及前文
+信标、队列和邮箱等都是RTOS常用的任务间通讯方法，但不是所有RTOS都支持这些方法。更详细的RTOS知识请参考Jim Cooling [10]_ 和 [11]_ ，以及前文
 提到的RTOS的官网文档。 
 
 使用RTOS的嵌入式系统软件架构是啥样的呢？图3.3(a)和图3.3(b)分别给出通用型架构、FreeRTOS用于ARM Cortex-M的嵌入式系统软件架构。
+图中可以看出，除了RTOS内核(Kernel)之外，RTOS还有一部分组件与具体的嵌入式系统MCU的架构有关。当FreeRTOS用于ARM Cortex-M系列MCU时，
+我们必须做一部分代码移植(Porting)工作，如图3.3(b)所示。
 
 .. image:: ../_static/images/c3/rtos_based_es_software_structure.jpg
-  :scale: 30%
+  :scale: 40%
   :align: center
 
 图3.3  基于RTOS的嵌入式系统软件架构
 
+如果Windows用户或许有上亿之多，FreeRTOS的用户数量接近其2倍，或许包含基于FreeRTOS的OpenRTOS和SafeRTOS(他们都是基于FreeRTOS)的用户。
+FreeRTOS得到全球嵌入式系统市场广泛认可的原因，除了免费且开源(我们自己可以修改FreeRTOS的源代码)之外，易用性也很关键。图3.3可以看出，
+FreeRTOS允许用户代码和第三方库代码直接访问嵌入式系统的硬件资源和半导体厂商提供的片上外设驱动库，这使得FreeRTOS保持代码量极小化和高易用性。
+图3.4是FreeRTOS的一种移植版本——支持nRF52x(Nordix公司的使用ARM Cortex-M4F微内核的一系列MCU)，编译环境是Arduno IDE。
 
+.. image:: ../_static/images/c3/rtos_freertos_arm_nrf52.jpg
+  :scale: 40%
+  :align: center
 
+图3.4  支持nRF52x系列MCU的FreeRTOS移植版本的文件树
+
+图中可以看出FreeRTOS包含，4个关键的内核文件，内核需要用到的SysTick定时器及其中断、堆内存(Heap)和编译器等依赖ARM Cortex-M4F的移植代码文件，
+以及其他一些辅助功能代码文件等。与桌面计算机系统的OS相比，FreeRTOS非常小型且极其简洁。
+
+--------------------------
 
 
 

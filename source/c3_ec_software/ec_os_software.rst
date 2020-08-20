@@ -113,7 +113,7 @@ DSP/BIOS应该是TI-RTOS的内核(在TI官网的名称是SYS/BIOS)。虽然ARM K
   :scale: 40%
   :align: center
 
-图3.3  基于RTOS的嵌入式系统软件架构
+图3.3  基于RTOS的嵌入式系统软件分层架构
 
 如果Windows用户或许有上亿之多，FreeRTOS的用户数量接近其2倍，或许包含基于FreeRTOS的OpenRTOS和SafeRTOS(他们都是基于FreeRTOS)的用户。
 FreeRTOS得到全球嵌入式系统市场广泛认可的原因，除了免费且开源(我们自己可以修改FreeRTOS的源代码)之外，易用性也很关键。图3.3可以看出，

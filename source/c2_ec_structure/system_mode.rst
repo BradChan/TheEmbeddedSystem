@@ -68,7 +68,7 @@ Bootlaoder程序也是固化在片内ROM(用户不能修改)，然后从ISRAM中
 ESP32通过QSPI外扩的NOR型FlashROM存储器的分区细节，最前面的64KB已经被乐鑫详细地定义，其他存储单元的用法和分区容量由用户通过分区表来指定。
 
 .. image:: ../_static/images/c2/esp32_qspiflashrom_usage.jpg
-  :scale: 25%
+  :scale: 50%
   :align: center
 
 图2.26  ESP32外扩的QSPI FlashROM存储器分区

@@ -4,4 +4,5 @@
 
 
 
-
+6. 面向对象编程(Object Oriented Programming)语言具有哪些特征？请逐一举例且简要说明每一个特征。
+7. 

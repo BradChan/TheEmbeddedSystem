@@ -97,7 +97,7 @@ ISA MCU的存储器系统及其映射规则，如图2.23所示。GD32VF103采用
 
 图2.24  一种Tensilica Xtensa MCU(ESP32)的存储器系统映射
 
-从上图可以看出，ESP32仅仅把整个4GB地址空间分割成3各区域：数据区(含FlashROM、SRAM和外设)、指令区(含FlashROM)、数据和指令混合区(仅RTC-Slow-Memory)。
+从上图可以看出，ESP32仅仅把整个4GB地址空间分割成3个区域：数据区(含FlashROM、SRAM和外设)、指令区(含FlashROM)、数据和指令混合区(仅RTC-Slow-Memory)。
 其中数据区又分为外部扩展的SRAM最大可达8MB(2个4MB区)，以及片上外设和片上数据存储器各占512KB地址空间；指令区包含片上的776KB指令存储器和11512KB片外扩展
 的FlashROM存储器；数据和指令混合区仅仅是片上RTC供电区的8KB慢速SRAM。
 

@@ -108,7 +108,7 @@ code.py主程序使用的所有库文件必须保存在CIRCUITPY磁盘根目录�
 如何修改code.py程序文件呢？这是一个纯文本格式的Python脚本程序文件，意味着桌面计算机系统的任意文本编辑器都可以用于修改、保存该文件。如图3.13所示。
 
 .. image:: ../_static/images/c3/bluefi_python_code_py_1_example.jpg
-  :scale: 50%
+  :scale: 40%
   :align: center
 
 图3.13  使用文本编辑器打开、修改、保存code.py文件

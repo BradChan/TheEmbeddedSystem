@@ -6,10 +6,16 @@
 Python是当下最流行的开源编程语言。
 
 Arduino [1]_ 自称使用“Arduino编程语言”。事实上，Arduino使用C/C++语言，并增加一些内部函数。Aduino编程语言的详细说明请参考 [3]_ 页面。
-与标准C/C++编程语言相比，Arduino编程语言针对嵌入式系统的应用开发不仅增加一些硬件相关的内部函数，还扩展一些硬件相关的数据类型和常数，
+与标准C/C++编程语言相比，Arduino编程语言针对嵌入式系统的应用开发不仅增加一些硬件相关的内部函数、数据类型和常数。
 
+当我们提到Arduino时，大多数情况指的都是“Arduino IDE”和“兼容Arduno IDE的开源板”，前者是一种嵌入式系统软件开发平台，后者是一类嵌入式系统硬件。
+目前Arduino社区支持8位的AVR系列MCU(来自Atmel)，以及32位的ARM Cortex-M系列和ESP系列MCU。安装Arduino IDE时，Arduino官方的AVR系列开源板BSP
+(板级支持包)软件和AVR的工具链(编译器等)，其他系列开源板的BSP软件和相关工具链可以在运行时安装。具体的安装步骤将在下一节内容中给出，本节我们首先了解
+Arduino IDE的基本功能和使用流程，以及兼容Arduino的开源板的一些特性。
 
+--------------------------
 
+Arduino IDE的主界面如图3.16所示，
 
 
 
@@ -20,5 +26,3 @@ Arduino [1]_ 自称使用“Arduino编程语言”。事实上，Arduino使用C/
 ::
 
 .. [1] https://www.arduino.cc/
-.. [2] https://www.arduino.cc/reference/en/
-.. [3] https://processing.org/ 

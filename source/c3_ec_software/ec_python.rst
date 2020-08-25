@@ -84,9 +84,92 @@ Python的便捷性和高效率时，务必记得“你的轻松是因为有人�
 然而，除了自己编写的Python脚本程序之外，Python解释器并不能改进我们的嵌入式系统产品的功能，他仅仅是执行Python脚本程序的一种特殊软硬件环境。现在的问题是，
 编写Python脚本程序的模式是什么样子？
 
-Python是一种典型的面向对象编程(Object Oriented Programming)语言，因此Python编程模式与其他OOP语言相似，支持封装、继承和多态等特性，而且Python还支持
-更灵活的动态库加载方法。此外，Python语言本身不仅支持常用的基本数据类型(包括实数型和复数型、数组、字符串等)，还支持列表、元组、字典等复合数据类型。
-总之，Python是一种易学易用的高效的脚本编程语言。
+Python是一种典型的面向对象编程(Object Oriented Programming)语言，Python支持封装、继承和多态等特性，而且Python还支持更灵活的动态库加载方法。
+此外，Python语言本身不仅支持常用的基本数据类型(包括实数型和复数型、数组、字符串等)，还支持列表、元组、字典等复合数据类型。
+
+--------------------------
+
+百闻不如一试，接下来我们用BlueFi来体验Python的高效率。首先使用USB数据线(数据线与电源线完全不同)将BlueFi与我们的电脑连接好，打开电脑的文件系统或电脑资源管理器，
+将会看到一个名称为“CIRCUITPY”的可卸载/移动磁盘。展开CIRCUITPY磁盘将看到磁盘上的全部文件和文件夹，这是BlueFi上预装的Python解释器的文件系统，
+这个文件系统显然与桌面计算机的文件系统完全兼容，支持修改、保持、删除、复制-粘贴等文件操作。BlueFi的Python解释器文件系统如图3.12所示。
+
+.. image:: ../_static/images/c3/bluefi_python_disk_filesystem.jpg
+  :scale: 40%
+  :align: center
+
+图3.12  BlueFi上的Python解释器的文件系统
+
+请注意，上图中的文件和文件夹仅仅是一个示例，不必完全相同。BlueFi上的Python解释器的文件系统中，code.py文件是默认的Python主程序，你可以修改并保持这个脚本程序，
+但不能修改他的文件名称！secrets.py是另一个Python脚本程序文件，该文件仅定义一个字典(dict)型数据列表(list)，这个列表定义BlueFi联网所需要的一些信息，
+如WiFi热点名称和密码等。boot_out.txt是一个纯文本文件，“.txt”这种扩展名称是很多人都熟悉的，用文本编辑器打开这个文本文件可以查看到文件内详细信息。
+CIRCUITPY磁盘上还有三个文件夹：lib、images、sound，他们分别保存Python库、图片资源和声音资源文件。其中lib文件是非常重要的，BlueFi上的Python解释器要求
+code.py主程序使用的所有库文件必须保存在CIRCUITPY磁盘根目录的lib文件夹中。
+
+如何修改code.py程序文件呢？这是一个纯文本格式的Python脚本程序文件，意味着桌面计算机系统的任意文本编辑器都可以用于修改、保存该文件。如图3.13所示。
+
+.. image:: ../_static/images/c3/bluefi_python_code_py_1_example.jpg
+  :scale: 50%
+  :align: center
+
+图3.13  使用文本编辑器打开、修改、保存code.py文件
+
+试一试用你电脑上的文本编辑器打开“CIRCUITPY/code.py”文件并修改、保存，把两个“time.sleep(0.5)”语句中的“0.5”分别修改为“0.1”和“0.9”，然后保存该文件，
+只要重新保存code.py文件时BlueFi上的Python解释器就重新开始执行该文件，你会观察到不同的执行效果(BlueFi上的红色LED闪烁的效果发生明显变化)。
+修改后的code.py脚本程序如下：
+
+.. code-block::  python
+  :linenos:
+
+    import time
+    from hiibot_bluefi.basedio import LED
+    led=LED()
+
+    while True:
+        led.red = 1
+        time.sleep(0.1)
+        led.red = 0
+        time.sleep(0.9)
+
+
+这个code.py脚本程序与观察到的现象之间有什么关系呢？执行这个脚本程序的第1行时导入“time”模块(module，即一个Python库)，第7行和第9行程序代码
+使用该模块的“sleep( value )”函数产生“让CPU等待若干时间的效果”(等待时间的长短由参数“value”指定，这个参数的单位是秒)；执行第2行语句是从“CIRCUITPY/lib/hiibot_bluefi”
+库文件夹的“basedio.py”模块中导入“LED”类对象，并在第3行语句中将该对象实例化为名叫“led”的变量，然后在第6行和第8行分别将该对象的“red”属性值分别设为“1”和“0”；
+第5行程序是一个无条件循环语句，与第6～9行四个语句一起组成一个无穷循环程序块。
+
+这个简单的示例程序比较容易理解，首先导入(import)主程序需要用到的库模块，然后在一个无穷循环体内执行“让BlueFi的红色LED亮，延时若干时间，再让BlueFi的红色LED灭，
+并延时若干时间”，我们看到BlueFi上的红色LED不断地闪烁的效果。
+
+或许你已有编写Python脚本程序的经验，或者通过这个简单示例已经发现：Python脚本程序中的“程序块”是根据程序语句行首的空格个数/Tab键个数来界定，譬如示例中的无穷循环程序块。
+当然前一行的“:”是必须的，这个符号是程序块的开始标志。Python编程语言的具体语法细节请参考相关书籍 [4]_ 
+
+--------------------------
+
+只需要一个文本编辑器就可以编写嵌入式系统的Python脚本程序，下载程序到目标系统也仅仅是文件保存或文件复制-粘贴等操作，这些便捷性和高效率应归功于Python解释器。
+除了文本编辑器之外，是否有嵌入式系统专用的Python工具软件呢？有，如MU、Thonny等开源Python工具软件。在嵌入式系统专用的Python工具软件中编辑Python脚本程序更容易，
+因为语法高亮、自动锁进行首以确保程序块对齐等功能，这是普通文本编辑器所不具备的。几乎所有嵌入式系统专用的Python工具软件都支持REPL，当我们想要了解某个模块支持
+哪些接口函数时，除了翻阅帮助文档外，还可以直接使用REPL获取这些信息，而且用REPL调试程序也是Python脚本程序开发过程中最常用的。
+
+开源的嵌入式系统专用的Python工具软件——MU编辑器 [5]_ 的界面如图3.14所示。用鼠标点击按钮栏的“模式”可以指定MU编辑器使用的Python解释器，或者将BlueFi连接到电脑后由MU编辑器自动识别并切换模式。
+点击“串口”按钮将打开字符控制台，在新打开的窗口中使用“ctrl+c”和“ctrl+d”强制BlueFi上的Python解释器进入和退出REPL模式。在REPL模式，我们可以在“>>”提示符后输入脚本程序语句，
+譬如“import time”和“dir(time)”等语句，BlueFi上的Python解释器会自动列出内置的“time”模块所支持的接口函数名或子类名。
+
+.. image:: ../_static/images/c3/es_python_software_tools_mu_editor.jpg
+  :scale: 40%
+  :align: center
+
+图3.14  MU编辑器的界面
+
+Thonny(托恩)编辑器 [6]_ 是爱沙尼亚塔尔图大学维护的一个Python开源项目，其界面如图3.15所示。表面上，MU和Thonny区别很大，但仅仅是界面风格的区别。
+
+.. image:: ../_static/images/c3/es_python_software_tools_thonny_editor.jpg
+  :scale: 45%
+  :align: center
+
+图3.15  Thonny编辑器的界面
+
+MU和Thonny两种开源的嵌入式系统专用的Python工具软件都支持，可选择的多种Python解释器、REPL、Python解释器的文件操作(加载、保存)、绘图仪等基本功能，
+Thonny编辑器拥有更多的Python解释器文件系统操作功能，以及代码树等扩展窗口。相较于普通文本编辑器，用这两种工具编写和调试Python脚本程序都非常方便，
+具体选择那种工具软件根据自己的使用目的和喜好确定。总的来说，MU编辑器短小精悍且比较稳定，Thonny功能强大但部分功能不稳定。
 
 --------------------------
 
@@ -101,3 +184,6 @@ Python是一种典型的面向对象编程(Object Oriented Programming)语言，
 .. [1] https://www.python.org/
 .. [2] http://micropython.org/download/all/ 
 .. [3] https://circuitpython.org/ 
+.. [4] Eric Matthes, 袁国忠 翻译, Python编程: 从入门到实践, 人民邮电出版社, 2016.7
+.. [5] https://codewith.mu/
+.. [6] https://thonny.org/

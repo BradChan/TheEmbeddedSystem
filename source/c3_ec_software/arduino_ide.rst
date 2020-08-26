@@ -154,10 +154,11 @@ I/O引脚资源定义的规则是为了确保开源库的兼容性，譬如前�
 譬如前述的ESP32和nRF52两种Arduino软件包都支持开源的FreeRTOS，我们可以在软件包找到这个RTOS的源码文件夹和接口函数声明文件，需要使用这个RTOS时，
 只需要使用“#include <FreeRTOS.h>”(或“#include <rtos.h>”，接口函数名称或有不同)即可。
 
-基于Arduino开源平台的软件架构如图3.22所示。
+基于Arduino开源平台的软件架构如图3.22所示。如果说使用Arduino开源平台开发嵌入式系统软件比较容易，从软件架构上可以看出，用户程序代码(应用程序)与硬件系统比较远，
+甚至都无需直接使用半导体厂商的驱动库，更不会直接访问存储单元地址。与实际硬件资源的距离越远，程序编码越容易。
 
 .. image:: ../_static/images/c3/arduino_opensource_software_structure.jpg
-  :scale: 40%
+  :scale: 30%
   :align: center
 
 图3.22  基于Arduino开源平台的软件架构

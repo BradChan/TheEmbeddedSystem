@@ -19,7 +19,7 @@ Arduino IDE的主界面如图3.16所示，代码编辑区和控制台占据大�
 将鼠标悬停的两个区域的分界线处，当鼠标符号变为上下箭头时即可拖动两个区域的边界线以改变两个区域的大小。
 
 .. image:: ../_static/images/c3/arduino_ide_ui_windows.jpg
-  :scale: 30%
+  :scale: 25%
   :align: center
 
 图3.16  Arduino IDE主界面
@@ -76,7 +76,7 @@ Arduino IDE的主界面如图3.16所示，代码编辑区和控制台占据大�
 但Arduino社区习惯上为每一种开源板取一个独特的惟一的名称，使用板名称到Arduino官网或搜索引擎即可查到这个板的具体参数。
 
 .. image:: ../_static/images/c3/arduino_ide_board_manager_board_list.jpg
-  :scale: 30%
+  :scale: 25%
   :align: center
 
 图3.17  Arduino IDE支持的开源板列表
@@ -86,7 +86,7 @@ Arduino IDE还支持其他开源板吗？Arduino官方支持的开源板类型�
 然后在Arduino IDE中即可使用这些软件工具对该开源板进行软件编程。Arduino的开发板管理器窗口如图3.18所示。
 
 .. image:: ../_static/images/c3/arduino_ide_board_manager_windows.jpg
-  :scale: 30%
+  :scale: 25%
   :align: center
 
 图3.18  Arduino IDE的开发板管理器
@@ -98,7 +98,7 @@ IDE对非官方开源板的支持也非常完善，而且与官方支持的开�
 然后再打开“开发板管理器”窗口，在搜索输入框中输入该开发板的名称即可安装该开源板相关的所有软件包。
 
 .. image:: ../_static/images/c3/arduino_ide_unofficial_board_url_manager.jpg
-  :scale: 30%
+  :scale: 25%
   :align: center
 
 图3.19  为Arduino IDE添加非官方的开源板的JSON描述文件的url
@@ -158,7 +158,7 @@ I/O引脚资源定义的规则是为了确保开源库的兼容性，譬如前�
 甚至都无需直接使用半导体厂商的驱动库，更不会直接访问存储单元地址。与实际硬件资源的距离越远，程序编码越容易。
 
 .. image:: ../_static/images/c3/arduino_opensource_software_structure.jpg
-  :scale: 30%
+  :scale: 25%
   :align: center
 
 图3.22  基于Arduino开源平台的软件架构

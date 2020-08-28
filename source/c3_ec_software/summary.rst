@@ -44,4 +44,4 @@
 .. [2] Jim Cooling, Real-time Operating Systems Book 1: The Theory, (个人自主发行), 2019.8
 .. [3] Jim Cooling, Real-time Operating Systems Book 2: The Practice: Using STM Cube, FreeRTOS and the STM32 Discovery Board, (个人自主发行), 2017.12
 .. [4] http://c.biancheng.net/design_pattern/
-.. [5] Walter Savitch, Kenrick Mock, Problem Solving with C++ (10th Edition), Pearson, 2017.2
+.. [5] Walter Savitch, Problem Solving with C++ (10th Edition), Pearson, 2017.2

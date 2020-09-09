@@ -126,7 +126,7 @@ BlueFi的BSP都将放在该文件夹中。既然一个兼容Arduino的开源板�
 将下载到本地电脑上的压缩包文件解压到“../Documents/Arduino/libraries/BueFi/”文件夹中，该文件夹的文件树如图4.3所示。
 
 .. image:: ../_static/images/c4/bluefi_bsp_file_tree_ch4_1.jpg
-  :scale: 40%
+  :scale: 30%
   :align: center
 
 图4.3  兼容Arduino的BSP的文件树
@@ -452,9 +452,9 @@ B按钮按下或单击或双击时分别显示不同的信息。
 
 .. Tip:: 使用BlueFi Python解释器的小技巧
 
-  - 单击复位按钮，重启系统和Python解释器，并开始执行已经保存的“/CIRCUITPY/code.py”脚本程序，出现“CIRCUITPY”磁盘。有些脚本程序会造成“CIRCUITPY”磁盘很久才会出现(忙着执行用户程序去了)
-  - 连续双击复位按钮，重启系统并进入Bootloader模式，所有RGB彩灯显示低亮度绿色，红色LED呈“呼吸灯”状态，出现“BLUEFIBOOT”磁盘，可以更新Python固件或Arduino应用程序
-  - 单击复位，当最左边的RGB彩灯显示低亮度黄色时再次按下复位按钮，重启系统并进入安全模式，此时最左边RGB彩灯呈黄色呼吸灯效果，出现“CIRCUITPY”磁盘，LCD屏幕上提示目前运行在“safe mode”
+  - **单击复位按钮** ，重启系统和Python解释器，并开始执行已经保存的“/CIRCUITPY/code.py”脚本程序，出现“CIRCUITPY”磁盘。有些脚本程序会造成“CIRCUITPY”磁盘很久才会出现(忙着执行用户程序去了)
+  - **连续双击复位按钮**，重启系统并进入Bootloader模式，所有RGB彩灯显示低亮度绿色，红色LED呈“呼吸灯”状态，出现“BLUEFIBOOT”磁盘，可以更新Python固件或Arduino应用程序
+  - **单击复位，当最左边的RGB彩灯显示低亮度黄色时再次按下复位按钮**，重启系统并进入安全模式，此时最左边RGB彩灯呈黄色呼吸灯效果，出现“CIRCUITPY”磁盘，LCD屏幕上提示目前运行在“safe mode”
 
 当你的某个脚本程序存在严重问题，将BlueFi插入电脑后无法出现“CIRCUITPY”磁盘，可以使用第三种操作强制让BlueFi进入安全模式，此时必出现该磁盘，即可修改“code.py”。
 

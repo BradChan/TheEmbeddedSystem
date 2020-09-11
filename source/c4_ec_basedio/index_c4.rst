@@ -18,8 +18,8 @@ DAC属于模拟输出外设。脉冲的宽度、频率(或密度)调制信号具
    dio.rst
    aio.rst
    timer_pwm.rst
-   pulse_in.rst
    pulse_out.rst
+   pulse_in.rst
    summary.rst
    problems.rst
 

@@ -121,7 +121,7 @@ BlueFi的LED类的实现代码在“../Documents/Arduino/libraries/BueFi/src/uti
       void off(void);
       void toggle(void);
       bool state(void);
-      void bright(uint16_t bv); 
+      void bright(uint16_t bv); // set LED brightness
 
   private:
       bool __isInited;
@@ -170,7 +170,7 @@ BlueFi的LED类的实现代码在“../Documents/Arduino/libraries/BueFi/src/uti
   }
 
   void LED::bright(uint16_t bv) {
-      analogWrite(__pin, bv);
+      analogWrite(__pin, bv); 
   }
 
 仅为演示的目的，我们仍使用默认的PWM信号参数，即8位分辨率的PWM占空比、62.5KHz的频率，如果需要改变分辨率和频率则可以使用“analogWriteResolution(bits)”接口。
@@ -187,10 +187,10 @@ BlueFi的LED类的实现代码在“../Documents/Arduino/libraries/BueFi/src/uti
 
   void loop() {
     static uint8_t bv=0, dir=1;
-    if (dir) { // fade up
-      bv += 5;
+    if (dir) {  // fade up
+      bv += 5;  // step length
       if (bv > 250) dir=0;
-    } else {   // fade down
+    } else {    // fade down
       if (bv >= 5) bv -= 5;
       else dir=1;
     }

@@ -348,9 +348,7 @@ BlueFi的Python解释器本身并没有声音输出接口，我们使用上述�
 
   import time
   from hiibot_bluefi.basedio import Button
-  # import SoundOut class from soundio.py
   from hiibot_bluefi.soundio import SoundOut
-  # instantiate SoundOut as a speaker
   spk = SoundOut()
   spk.volume = 1.0
   button=Button()

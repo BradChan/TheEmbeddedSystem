@@ -13,7 +13,7 @@
 
 图4.15  传感器输出的脉冲调制接口示例
 
-
+PDM(脉冲密度调制)是一种
 
 .. image:: ../_static/images/c4/pulse_in_pdm_microphone.jpg
   :scale: 25%

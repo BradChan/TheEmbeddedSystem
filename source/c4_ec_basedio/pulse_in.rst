@@ -161,9 +161,9 @@ Arduino平台如何使用脉冲调制信号接口呢？我们仍以BlueFi开源�
   extern PDMClass mic;
   #endif // __PDM_MIC_H__
 
-关键的接口共7个，包括“begin()”用于初始化PDM接口的麦克风的模式(单声道/立体声)和采样率；“end()”用来停用PDM接口并释放已分配的资源；
-“available()”可查询接口上十分有可读的数据以及具体的可读字节数；“read()”是将可读的数据读入指定的缓存；
-“onReceive()”用来注册PDM接口的读数据流的回调函数；“setGain()”和“setBufferSize()”分别用于指定采样数据的放大倍数和采样数据缓存大小。
+关键的接口共7个，1) “begin()”用于初始化PDM接口的麦克风的模式(单声道/立体声)和采样率；2) “end()”用来停用PDM接口并释放已分配的资源；
+3) “available()”可查询接口上十分有可读的数据以及具体的可读字节数；4) “read()”是将可读的数据读入指定的缓存；
+5) “onReceive()”用来注册PDM接口的读数据流的回调函数；6) “setGain()”和“setBufferSize()”分别用于指定采样数据的放大倍数和采样数据缓存大小。
 更详细的用法详见BSP文件夹的“../libraries/BlueFi/src/utility/PDM_mic/README.MD”文档，此处不再赘述。
 
 我们用下面的示例程序来演示如何使用上述的PDM类麦克风的接口，示例代码如下：

@@ -9,3 +9,10 @@ I2C
 
 
 
+-------------------------
+
+
+参考文献：
+::
+
+.. [1] https://learn.adafruit.com/i2c-addresses/the-list

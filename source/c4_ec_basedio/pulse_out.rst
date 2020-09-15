@@ -37,7 +37,7 @@ PWM信号是一种频率固定的脉冲宽度调制信号，脉冲宽度承载�
 
 已知递减的定时器模块的输入时钟频率F_in_clk，以及待产生的方波频率F_out，使用自动重装寄存器R_autoload和中断服务，程序伪码：
 
-.. code-block::  
+.. code-block::  C
   :linenos:
 
   void iniTimer(F_out) {

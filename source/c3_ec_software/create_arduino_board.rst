@@ -143,7 +143,6 @@ Arduino IDE从哪里获取这些信息呢？已安装的开发板软件包中的
 滚动鼠标直到“boards.txt”文件最底部，使用复制-粘贴操作将下面的文本完整地添加到该文件的最后面，并保存该文件(覆盖原始的文件)。
 然后重新打开Arduino IDE，“BlueFi”名称将出现在“Adafruit nRF52 Boards”列表中。
 
-
 .. code-block::  C
   :linenos:
 

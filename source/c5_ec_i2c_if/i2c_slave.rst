@@ -41,6 +41,169 @@ Arduino的I2C通讯接口的硬件抽象层不仅支持主机模式，也支持�
 
 图5.8  两个MCU之间使用I2C通讯的工作流程(使用硬件抽象层接口)
 
+图中的实线框内的操作是软件部分，实线框外的操作由I2C功能单元的硬件自动完成。除了图中的“主机写-从机读”和“主机读(请求)-从机写”的I2C接口数据传输流程外，
+还有“主机写-从机读-主机请求-从机写”(简单理解为“主机写后读”)的数据传输流程，这个流程要求主机“write(val)”后调用“endTransmission(false)”执行数据发送且发送完毕后不发起“STOP时序”，
+即不释放I2C总线，继续向从机请求数据，当从机数据发送完毕后，主机才发起“STOP时序”释放I2C总线。请参照图5.8的流程自行设计“主机写后读”的操作流程。
+
+下面我们找来两个BlueFi，并使用一根型号为“SH1.0mm-4P”双头同向的信号线将他们连接起来。BlueFi开源板带有一个专用的4脚I2C扩展插座，在复位按钮旁边，
+该插座的4各信号分别为3.3V、GND、SDA、SCL，并顺序排列。使用I2C接口连接两个BlueFi的方法如图5.9所示。
+
+.. image:: ../_static/images/c5/i2c_connecting_two_bluefi.jpg
+  :scale: 40%
+  :align: center
+
+图5.9  使用I2C接口连接两个BlueFi的方法
+
+请注意4芯连接线的型号、脚间距，并确保引脚是同向一一对应的，即两个BlueFi开源板的i2C专用插座的4个脚分别一一对应连接。
+
+现在我们可以参考图5.8所示的流程，分别编写“主机写”和“从机接收”的程序对儿，并分别编译下载到一个BlueFi上执行，使用USB数据线将工作在从机模式的BlueFi连接到电脑，
+打开Arduino IDE串口监视器可以看到主机写给从机的数据。程序代码如下：
+
+(**master_write.ino文件**，编译并下载到一个BlueFi开源板，他是I2C接口的Master设备)
+
+.. code-block::  C
+  :linenos:
+
+  #include <Wire.h>
+  TwoWire* __wire;  // define a pointer "__wire" to TwoWire type
+
+  void setup() {
+    delay(500);
+    __wire = &Wire;  // the pointer __wire point to Wire
+    __wire->begin(); // join i2c bus (address optional for master)
+  }
+
+  void loop() {
+    static uint8_t x=0;
+    __wire->beginTransmission(0x72); // transmit to device #114
+    __wire->write("x is ");       // sends five bytes
+    __wire->write(x);             // sends one byte  
+    __wire->endTransmission();    // stop transmitting
+    x++;
+    delay(998);
+  }
+
+在这个“主机写”的程序中，首先声明一个TwoWire型指针“__wire”，并在初始化时将这个指针指向BlueFi的I2C接口0，即“Wire”，并使用指针访问这个I2C接口，
+在初始化阶段将这个I2C接口初始化为主机模式(使用无参数的“begin()”初始化接口)。在主循环中每隔1秒从这个I2C接口写出写字符串“x is 12”，其中字符串中的数值是可变的，
+根据“static uint8_t x=0;”语句，以及每写出一次后执行“x++;”语句，这个字符串的变化规律是怎么样的呢？
+
+(**slaver_receive.ino文件**，编译并下载到一个BlueFi开源板，他是I2C接口的Slave设备)
+
+.. code-block::  C
+  :linenos:
+
+  #include <Wire.h>
+  TwoWire* __wire;  // define a pointer "__wire" to TwoWire type
+
+  void setup() {
+    __wire = &Wire;            // the pointer __wire point to Wire
+    __wire->begin(0x72);       // join i2c bus with address #114
+    __wire->onReceive(cb_rev); // register a callback function on Receive event 
+    Serial.begin(115200);      // start serial for output
+  }
+
+  void loop() {
+    //delay(500);
+  }
+
+  // callback function that executes whenever data is received from master
+  // this function is registered as an event, see setup()
+  void cb_rev(int num) {
+    while( 1 < __wire->available() ) { // loop through all but the last
+      char c = __wire->read();         // receive byte as a character
+      Serial.print(c);                 // print the character
+    }
+    uint8_t x = __wire->read(); // the last received byte as an integer
+    Serial.println(x);          // print the integer
+  }
+
+“从机接收”程序中，同样使用指针“__wire”指向I2C接口0，即Wire。初始化时使用“__wire->begin(0x72)”将I2C接口0配置为从机模式，且从地址为114，
+并使用“__wire->onReceive(cb_rev);”语句注册“当接收到主机发送的数据”事件的回调函数——“cb_rev(int num)”。定义这个回调函数时，监测I2C接口0是否有数据可读，
+如果有效数据个数大于1个则读出1个数据并打印到串口字符控制台，最后一个数据作为整数打印到控制台。
+
+注意，从机的程序中使用的回调函数“void cb_rev(int num)”带有的输入参数“int num”是“onReceive”接口指定的，用于传递发生“onReceive”事件时接收缓冲区内有效的数据个数，
+此示例中未使用这个参数。
+
+最后，根据图5.8的流程，实现“主机请求读”和“从机写”的程序对儿。示例代码如下：
+
+(**master_request.ino文件**，编译并下载到一个BlueFi开源板，他是I2C接口的Master设备)
+
+.. code-block::  C
+  :linenos:
+
+  #include <Wire.h>
+  TwoWire* __wire;  // define a pointer "__wire" to TwoWire type
+
+  void setup() {
+    __wire = &Wire;       // the pointer __wire point to Wire
+    __wire->begin();      // join i2c bus (address optional for master)
+    Serial.begin(115200); // start serial for output
+  }
+
+  void loop()
+  {
+    __wire->requestFrom(0x72, 6);// request 6 bytes from slave device #114
+    while(__wire->available()) { // slave may send less than requested
+      char c = __wire->read();   // receive a byte as character
+      Serial.print(c);           // print the character
+    }
+    delay(998);
+  }
+
+在这个主机程序中，初始化部分与前一个“主机写”程序完全一样，但是主循环中的程序完全不同。主主循环程序中，每秒从I2C接口0向地址为114的从机请求6字节数据，
+然后监测接收缓冲区是否有数据可读，如果有则逐个读出并打印到串口字符控制台。
+
+(**slaver_send.ino文件**，编译并下载到一个BlueFi开源板，他是I2C接口的Slave设备)
+
+.. code-block::  C
+  :linenos:
+
+  #include <Wire.h>
+  TwoWire* __wire;  // define a pointer "__wire" to TwoWire type
+
+  void setup() {
+    __wire = &Wire;            // the pointer __wire point to Wire
+    __wire->begin(0x72);       // join i2c bus with address #114
+    __wire->onRequest(cb_req); // register the callback function of OnRequest event
+  }
+
+  void loop() {
+    delay(100);
+  }
+
+  // callback function that executes whenever data is requested by master
+  // this function is registered as an event, see setup()
+  void cb_req(void) {
+    __wire->write("hello "); // respond with message of 6 bytes as expected by master
+  }
+
+在这个“从机写”的程序中，首先初始化I2C接口0，并注册“当主机请求读数据”事件的回调函数“cb_req”。在回调函数“cb_req”中仅发生6个字符给主机。
+
+-------------------------
+
+上面的两对示例程序中，我们仅仅使用I2C硬件抽象层的接口实现两个BlueFi之间通讯，虽然表面上看两对程序各自实现的数据传输都是单工的，
+即“主机写”和“从机读”、“主机请求”和“从机发送”，实际的输出协议都是双向的。
+
+两个MCU如何使用I2C接口实现双向数据通讯呢？我们这里提供两种方案。一种是采用“存储器映射”机制，从机端的数据信息按特定的数据结构(如数组)顺序地存储，
+主机端首先“写”数据的顺序号来指定数据单元，然后通过请求读取该数据单元，该方法的主机和从机的具体流程参见图5.10所示；另一种方法是采用“状态机”，从机端的数据信息可以采用松散的组织形式，
+譬如整型、浮点型、字符串等，主机端首先发送“命令”切换从机的状态机，然后通过请求读取该状态对应的数据信息，该方法的主机和从机的具体流程参见图5.11所示。
+
+.. image:: ../_static/images/c5/x.jpg
+  :scale: 40%
+  :align: center
+
+图5.10  使用I2C接口实现两个MCU双向通讯的主机和从机流程(存储器映射)
+
+.. image:: ../_static/images/c5/y.jpg
+  :scale: 40%
+  :align: center
+
+图5.11  使用I2C接口实现两个MCU双向通讯的主机和从机流程(状态机)
+
+请根据这些流程图并参考前面的示例程序，分别编写对应的主机端和从机端的程序对儿，并使用两个BlueFi测试程序是否达到目标。
+
+-------------------------
+
 
 
 

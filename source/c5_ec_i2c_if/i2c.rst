@@ -149,5 +149,5 @@ I2C接口协议的规范和实现方法并不复杂，接口硬件方面仅仅�
 参考文献：
 ::
 
-.. [1] https://learn.adafruit.com/i2c-addresses/the-list
-.. [2] https://www.nxp.com/docs/en/application-note/AN10441.pdf
+  [1] https://learn.adafruit.com/i2c-addresses/the-list
+  [2] https://www.nxp.com/docs/en/application-note/AN10441.pdf

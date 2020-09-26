@@ -638,6 +638,6 @@ Python解释器的所有字符输出也都会同步地显示在BlueFi的LCD显�
 参考文献：
 ::
 
-.. [1] https://www.arduino.cc/en/Reference/Wire
-.. [2] https://www.st.com/resource/en/datasheet/lsm6ds33.pdf
-.. [3] https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/2_Humidity_Sensors/Datasheets/Sensirion_Humidity_Sensors_SHT3x_Datasheet_digital.pdf
+  [1] https://www.arduino.cc/en/Reference/Wire
+  [2] https://www.st.com/resource/en/datasheet/lsm6ds33.pdf
+  [3] https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/2_Humidity_Sensors/Datasheets/Sensirion_Humidity_Sensors_SHT3x_Datasheet_digital.pdf

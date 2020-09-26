@@ -210,4 +210,4 @@ I2C硬件抽象层为从机端提供专用的接口，包括“OnReceive”和�
 参考文献：
 ::
 
-.. [1] https://www.arduino.cc/en/Reference/Wire
+  [1] https://www.arduino.cc/en/Reference/Wire

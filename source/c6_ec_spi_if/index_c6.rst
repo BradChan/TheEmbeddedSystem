@@ -1,5 +1,5 @@
 ================================
-第6章 SPI接口及其应用
+第6章  SPI接口及其应用
 ================================
 
 SPI(Serial Peripheral Interface)，即串行外设接口。SPI最早由Motolora半导体部门提出，最初出现在M68系列单片机上用于连接片外的EEPROM、ADC和DAC等外设。
@@ -19,8 +19,8 @@ QSPI(Quad SPI)接口的数据信号达4个，假设以同步时钟信号的频�
    :maxdepth: 1
 
    spi.rst
-   spi_slave.rst
    spi_master.rst
+   spi_slave.rst
    spi_if_application.rst
    summary.rst
    problems.rst

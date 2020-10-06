@@ -620,7 +620,7 @@ Python解释器的所有字符输出也都会同步地显示在BlueFi的LCD显�
 
 -------------------------
 
-为了便于测试，请先删除“../Documents/Arduino/libraries/BlueFi”文件夹中的全部分局，然后下载下面的压缩文件包，
+为了便于测试，请先删除“../Documents/Arduino/libraries/BlueFi”文件夹中的全部文件，然后下载下面的压缩文件包，
 并解压到“../Documents/Arduino/libraries/BlueFi”文件夹中，
 
 . :download:`本节内容所用到的BlueFi的BSP源文件 <../_static/dl_files/bluefi_ch5_2/BlueFi_bsp_ch5_2.zip>`

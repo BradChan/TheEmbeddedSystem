@@ -110,6 +110,8 @@ SCK信号的第奇数次跳变沿采样MOSI和MISO信号，即SCK的下降沿时
 
 图6.7  DSPI和QSPI通讯接口的主从信号
 
+DSPI和QSPI通讯接口及其应用详见 [2]_ 页面的介绍。
+
 SD卡是一种NAND结构的大容量闪存，TF卡是外型尺寸更小的SD卡(即micro SD)。SD卡接口不仅兼容标准SPI接口，也有专用的SD卡接口规范。
 当SD卡的读写速度要求较低的场合，尤其嵌入式系统中可以使用标准SPI接口访问SD卡。即使SD卡的高速读写系统，SD卡上电后的初始化阶段，
 主机使用标准SPI接口向SD卡发送配置命令，然后SD卡根据配置命令进入SD卡接口模式实现高带宽的数据读写操作。有关SD卡的SPI模式详见文档 [1]_ 
@@ -125,7 +127,12 @@ SD卡模式使用6个信号，分别为CMD、SCK、DAT0~3。4位宽度的串行�
 SD卡操作总是以命令帧(由1个字节命令、4个字节命令参数和1个字节CRC7校验和组成)开始，譬如CMD17和CMD24分别是单个数据块的读和写命令。
 
 SDIO(Secure Digital Input and Output)接口是从SD接口衍生出来的一种高吞吐量的外设接口，向下兼容SD卡接口规范和标准SPI接口。
-SDIO接口不仅用于可插拔的存储卡，还用于WiFi无线网卡、蓝牙卡、摄像头、GPS等外设接口。SDIO的具体应用和规范可在页面 [2]_ 找到。
+SDIO接口不仅用于可插拔的存储卡，还用于WiFi无线网卡、蓝牙卡、摄像头、GPS等外设接口。SDIO的具体应用和规范可在页面 [3]_ 找到。
+
+更多的SPI通讯接口的变种，请查阅维基百科的SPI说明(https://en.wikipedia.org/wiki/Serial_Peripheral_Interface)，如果无法打开该链接，
+请点击下面的链接下载PDF格式的文档：
+
+. :download:`维基百科(wikipedia.org)对SPI通讯接口的介绍 <../_static/dl_files/bluefi_ch6_1/Serial_Peripheral_Interface_Wikipedia.pdf>`
 
 前面已初步了解半双工SPI接口(3线)、全双工的标准SPI接口(4线)、DSPI(4线)、QSPI(6线)、SD(6线)及其衍生的SDIO等通讯接口，
 这些接口常用于嵌入式系统主控制器与内部组件之间的总线接口，与I2C相比SPI接口的时序更简单、更容易实现、允许更高的波特率。
@@ -163,4 +170,5 @@ BlueFi开源板的QSPI接口固定用于片外2MB闪存的扩展接口，按照n
 ::
 
   [1] https://www.sdcard.org/downloads/pls/click.php?p=Part1_Physical_Layer_Simplified_Specification_Ver8.00.jpg&f=Part1_Physical_Layer_Simplified_Specification_Ver8.00.pdf&e=EN_SS1_8
-  [2] https://www.sdcard.org/chs/index.html
+  [2] https://www.nxp.com/docs/en/application-note/AN4512.pdf
+  [3] https://www.sdcard.org/chs/index.html

@@ -132,7 +132,7 @@ Intel、ARM等商业微内核的垄断地位，更多企业将会基于此开源
 .. [5] https://www.sifive.com/risc-v-core-ip
 .. [6] https://www.nucleisys.com/product.php
 .. [7] 手把手教你设计CPU: RISC-V处理器篇, 胡振波, 人民邮电出版社, 2019
-.. [8] https://ibex-core.readthedocs.io/en/latest/introduction.html
+.. [8] https://ibex-core.readthedocs.io/en/latest/
 .. [9] https://www.westerndigital.com/company/innovations/risc-v
 .. [10] https://github.com/chipsalliance
 .. [11] http://www.gd32mcu.com/cn/product

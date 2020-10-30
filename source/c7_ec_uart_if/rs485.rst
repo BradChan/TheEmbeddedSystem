@@ -75,7 +75,215 @@ RS-485接口部分的电路原理图参见图7.20。
 
 上面的原理图中使用2个标准的半双工差分信号收发器实现2个标准RS-485端口，使用任何一个端口都可以连接到一个半双工差分传输的网络上，
 或者同时使用两个端口连接到全双工差分传输网路上。每个RS485接口收发器占用BlueFi的3个拓展引脚，分别用作RxD、TxD和EN(收/发使能控制信号)。
+其中，RS-485收发器的EN信号为逻辑“0”时处于接收状态，为逻辑“1”时处于发送状态，我们使用10K下拉电阻确保EN信号默认为低电平，即RS485收发器处于接收数据状态，
+仅当需要发送数据时才将EN置为高电平。
 
+我们打算使用两个BlueFi和通讯扩展板，并使用2根信号线将两个扩展板的0号RS-485端口连接起来，请注意正确的接线：两个板RS-485端口的A与A对接，B与B对接。
+两个BlueFi的角色分别为主机和从机，并采用主从结构网络，每次通讯总是由主机发送一个数据帧，第2个和第3个字符为从机地址，每个从机由一个惟一的地址，
+当从机收到主机数据帧中的地址字符与自身地址匹配时则发出一个应答帧，从机发出的应答帧的第2个和第3个字符也是从机地址。
+
+为了调试方便，我们使用Python脚本方法来设计示例程序，请参考第4.1节最后一部分内容中描述的方法将更新自己的BlueFi开源板的Python解释器固件，
+并将BlueFi与电脑USB端口正确地连接，确保电脑的资源管理器中能看到名为“CIRCUITPY”磁盘。
+
+我们首先给出从机的示例程序，代码如下：
+
+.. code-block::  Python
+  :linenos:
+
+  # RS485 slave: addr = ?
+  myAddr = '28'
+  import time, random
+  import digitalio, board, busio
+  from hiibot_bluefi.basedio import LED
+  led = LED()  # LED on whlie sending data
+  en0 = digitalio.DigitalInOut(board.P8)
+  en0.direction = digitalio.Direction.OUTPUT
+  en0.value = 0  # enable receive
+  uart0 = busio.UART( board.P1, board.P0, baudrate=9600, timeout=0.5, receiver_buffer_size=32)
+  outBuf = bytearray(32)  # out buffer
+  led.red = 0  
+  ### generate a random strin
+  def generateStr():
+      sstr = 's' + myAddr 
+      for i in range(7):
+          ch = chr(random.randint(48, 57)) # '0'~'9'
+          sstr += ch
+      #print(sstr)
+      return sstr
+  ### send a response
+  def uart0Send(sstr) :
+      global outBuf
+      outBuf = bytearray(sstr)
+      led.red = 1   # LED On
+      en0.value = 1 # enable transmit
+      time.sleep(0.005)
+      outBuf[9] = 0x0A  # terminator  
+      uart0.write(outBuf, 10) # send 10 bytes data
+      time.sleep(0.005)
+      en0.value = 0 # enable receive
+      led.red = 0   # LED Off
+  ### receiving message and response
+  uart0.reset_input_buffer() # clear buffer
+  while True:
+      if uart0.in_waiting > 3:  # the number of bytes in receive buffer 
+          #in0Buf = uart0.read(10) # read those data 
+          in0Buf = uart0.readline()
+          if len(in0Buf) > 2 :
+              in0Str = ''.join([chr(b) for b in in0Buf])
+              print("No." + myAddr + " Slave got: " + in0Str)
+              uart0.reset_input_buffer()
+              if in0Str[1:3]==myAddr : # [s][addr.h][addr.l][..]
+                  uart0Send( generateStr() )
+                  print("Response ok")
+
+该示例程序中，第2行“myAddr='28'”是指定从机的地址(字符串形式)，当发送应答帧时会使用这个信息(第15行)，收到数据帧时也将使用该信息判断是否需要发送应答帧(第43行)。
+程序启动时首先导入必要的库模块，包括digitalio、board、busio，然后在第7～9行代码中对0号RS485端口的收/发使能信号进行初始化，
+第10行实例化一个UART子类并对其初始化(指定引脚、波特率、等待的超时时间等)。我们还打算使用BlueFi的红色LED指示灯亮和灭来指示发送状态：发送时让红色LED亮，发送完毕则灭掉。
+
+我们定义了两个子程序分别生成发送字符串和发送字符串的功能。从机发送的字符串是从机应答帧，总长度为10个字节，格式为：
+
+  1. 首字符固定为‘s’
+  2. 第2个和第3个字符固定为本从地址
+  3. 第4～9个位置是6个随机字符
+  4. 最后一个字符固定为换行符，即0x0A
+
+两个子程序首先按上述的信息结构组织应答帧，发送应答帧前先将0号端口的收/发使能信号置位，即“en0.value=1”，然后在发送应答帧“uart0.write(outBuf, 10)”，
+方完毕后使用“en0.value=0”将收/发使能信号清零，即进入接收状态。
+
+事实上，从机始终处于接收状态，主机或其他从机发送的数据帧都会被接收下来，然后根据数据帧中的地址信息判断是否需要应答，否则丢弃收到的数据帧。
+从机的主循环中，始终检查串行接收缓冲区是否有数据，如果有则读取数据直到遇见换行符才结束(或超时结束)，然后将接收到的字符串打印到LCD屏幕上，
+并判断接收到的数据帧中第2个和第3个字符是否与本机地址相匹配，如果匹配则调用子程序发送应答帧。
+
+主机的示例程序稍显复杂些，虽然功能也十分简单：按下BlueFi的A按钮时发送一个数据帧给指定的从机，数据帧的总长度也是10个字节，格式为：
+
+  1. 首字符固定为‘s’
+  2. 第2个和第3个字符是从机的地址字符串
+  3. 第4～9个位置是6个随机字符
+  4. 最后一个字符固定为换行符，即0x0A
+
+然后主机进入等待应答帧的状态，如果在预定的时时间内收到应答帧则等待下次按A按钮再次发送。正常的主机程序的就是如此简单，
+然而如何应对不正常的情况呢？譬如预定时间内没有收到从机的应答帧，怎么办？我们采用再次发送同样数据帧的方案，也就是重试。重试多少次呢？
+下面示例程序重试2次。主机的示例程序如下：
+
+.. code-block::  Python
+  :linenos:
+
+  # RS485 master
+  import time, random
+  import digitalio, board, busio
+  from hiibot_bluefi.basedio import  LED,Button
+  led = LED()  # LED on whlie sending data
+  btn = Button()
+  en0 = digitalio.DigitalInOut(board.P8)
+  en0.direction = digitalio.Direction.OUTPUT
+  en0.value = 0  # enable receive
+  uart0 = busio.UART( board.P1, board.P0, baudrate=9600, timeout=0.5, receiver_buffer_size=32)
+  outBuf = bytearray(32)  # out buffer
+  led.red = 0   
+  slaveAddr = '28'
+  ###### generate a random string
+  def generateStr():
+      sstr = 's'+slaveAddr
+      for i in range(7):
+          ch = chr(random.randint(48, 57)) # '0'~'9'
+          sstr += ch
+      #print(sstr)
+      return sstr
+  ###### the 1st send
+  def uart0Send(sstr) :
+      global outBuf
+      outBuf = bytearray(sstr)
+      led.red = 1   # LED On
+      en0.value = 1 # enable transmit
+      time.sleep(0.005)
+      outBuf[9] = 0x0A  # terminator
+      #sendStr = ''.join([chr(b) for b in outBuf])
+      #print(sendStr)
+      uart0.write(outBuf, 10) # send 10 bytes data
+      time.sleep(0.005)
+      en0.value = 0 # enable receive
+      led.red = 0   # LED Off
+  ###### resend, the 2nd, 3rd send
+  def tryAgainSend():
+      global outBuf
+      print("timeout of response, I'll try again")
+      led.red = 1   # LED On
+      en0.value = 1 # enable transmit
+      time.sleep(0.005)
+      #sendStr = ''.join([chr(b) for b in outBuf])
+      #print(sendStr)
+      uart0.write(outBuf, 10) # send 10 bytes data
+      time.sleep(0.005)
+      en0.value = 0 # enable receive
+      led.red = 0   # LED Off
+  ###### read data from in buffer and print
+  def revProcess() :
+      #in0Buf = uart0.read(10) # read those data
+      in0Buf = uart0.readline()
+      in0Str = ''.join([chr(b) for b in in0Buf])
+      print("master got:" + in0Str)
+      #uart0.reset_input_buffer() # discard any unread characters 
+      print("we got a response")    
+
+  # a finite state machine be used to control communication
+  fsm_State = 0 # 0:idle, 1:revWaiting, 2:tryAgain_a, 3:tryAgain_b
+  stPoint = time.monotonic()
+  waitSeconds = 1.0
+  while True:
+      btn.Update()
+      # idle state
+      if fsm_State==0 :  
+          if btn.A_wasPressed :
+              uart0.reset_input_buffer()  
+              uart0Send( generateStr() )
+              stPoint = time.monotonic()
+              print("send ok") 
+              fsm_State = 1  # shift to next state
+      # wait response state
+      elif fsm_State==1 :
+          if uart0.in_waiting >= 3:
+              revProcess()
+              fsm_State = 0  # shift to idle state 
+          if (time.monotonic() - stPoint) >= waitSeconds :
+              tryAgainSend()
+              stPoint = time.monotonic()
+              fsm_State = 2  # shift to next state
+      # wait response state after resend (the 2nd send)
+      elif fsm_State==2 :
+          if uart0.in_waiting >= 3:
+              revProcess()
+              fsm_State = 0  # shift to idle state 
+          if (time.monotonic() - stPoint) >= waitSeconds :
+              tryAgainSend()
+              stPoint = time.monotonic()
+              fsm_State = 3  # shift to next state
+      # wait response state after resend (the 3rd send)
+      elif fsm_State==3 :
+          if uart0.in_waiting >= 3:
+              revProcess()
+              fsm_State = 0  # shift to idle state 
+          if (time.monotonic() - stPoint) >= waitSeconds :
+              print("timeout of response, I'll give up")
+              fsm_State = 0  # shift to idle state
+
+现在你可以将上面主机程序保存到一个BlueFi上(即保存到作为主机使用的BlueFi的“CIRCUITPY/code.py”文件)，并将从机程序保存到另一个BlueFi上。
+然后将两个BlueFi开源板分别插入两个通讯接口拓展板，标记以下那个是主机，并用两根电线将0号RS-485端口连接好。准备妥当之后，可以试一试按下作主机角色使用的BlueFi的A按钮，
+并观察两个BlueFi的LCD屏幕上显示的内容，根据屏幕上显示的信息，我们很容易判断通讯是否成功。
+
+试用上面的示例程序后，我们再来了解主机的程序代码。主机的初始化代码与从机的相似，只是需要增加按钮类模块。第13行代码“slaveAddr = '28'”是指定待访问的从机地址。
+主机程序中声明类4个子程序，前两个与从机的两个子程序完全相同，不再赘述。另外两个子程序，一个是重新发送前次发送的数据帧(重试操作需要用到)，另一个是接收数据和处理。
+
+主机的主循环程序显得明显复杂！我们使用一个有限状态机(Finite State Machine)来控制主机的“等待A按钮被按下，首次发送数据帧，等待应答超时后重试，
+等待应答超时后再重试”通讯流程。事实上，实现这样的通讯流程有很多种方法，有限状态机的实现方法在逻辑上更简单一些。由于Python语言不支持“switch-case”语法，
+上面示例程序中使用“if..elif..”，熟悉C语言或其他支持“switch-case”的编程语言的你肯定能给出更高效的有限状态机。
+
+主机的示例程序中使用的有限状态机的流程图如图7.21所示。根据下图对照主机的示例代码，我们就很容易理解这些代码的目的。
+
+.. image:: ../_static/images/c7/x.jpg
+  :scale: 30%
+  :align: center
+
+图7.21  主机的有限状态机
 
 
 

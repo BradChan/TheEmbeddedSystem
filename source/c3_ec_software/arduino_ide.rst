@@ -5,10 +5,10 @@
 现在的Arduino已是开源(Open Source)的代名词，Arduino是全球最大的电子和编程开源社区。截止目前，Linux是最成功的开源OS，Arduino是最成功的嵌入式软硬件开发平台，
 Python是当下最流行的开源编程语言。
 
-Arduino [1]_ 自称使用“Arduino编程语言”。事实上，Arduino使用C/C++语言，并增加一些内部函数。Aduino编程语言的详细说明请参考 [2]_ 页面。
+Arduino [1]_ 自称使用“Arduino编程语言”。事实上，Arduino使用C/C++语言，并增加一些内部函数。Arduino编程语言的详细说明请参考 [2]_ 页面。
 与标准C/C++编程语言相比，Arduino编程语言针对嵌入式系统的应用开发不仅增加一些硬件相关的内部函数、数据类型和常数。
 
-当我们提到Arduino时，大多数情况指的都是“Arduino IDE”和“兼容Arduno IDE的开源板”，前者是一种嵌入式系统软件开发平台，后者是一类嵌入式系统硬件。
+当我们提到Arduino时，大多数情况指的都是“Arduino IDE”和“兼容Arduino IDE的开源板”，前者是一种嵌入式系统软件开发平台，后者是一类嵌入式系统硬件。
 目前Arduino社区支持8位的AVR系列MCU(来自Atmel)，以及32位的ARM Cortex-M系列和ESP系列MCU。安装Arduino IDE时，Arduino官方的AVR系列开源板BSP
 (板级支持包)软件、内部函数和AVR的工具链(编译器等)，其他系列开源板的BSP软件和相关工具链可以在运行时安装。具体的安装步骤将在下一节内容中给出，本节我们首先了解
 Arduino IDE的基本功能和使用流程，以及兼容Arduino的开源板的一些特性。

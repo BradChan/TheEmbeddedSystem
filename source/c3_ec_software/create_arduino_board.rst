@@ -484,7 +484,7 @@ I2C和SPI等接口的引脚。
 并将nRF52840的USB虚拟串口作为通讯接口，将hex格式Bootloader文件下载到开源板上来更新Bootloader固件；另一种方法是使用Adafruit改进的nRF52命令行工具软件，
 无需J-Link软件，同样将nRF52840的USB虚拟串口作为通讯接口，将zip格式Bootloader文件下载到开源板来更新Bootloader固件。
 
-如果选择第2种方法，更新Bootloader固件的软件工具已经在nRF52系列开源板的软件包中，无需下载其他软件。如果选择第1种方法，需要先现在两个软件工具。
+如果选择第2种方法，更新Bootloader固件的软件工具已经在nRF52系列开源板的软件包中，无需下载其他软件。如果选择第1种方法，需要先下载两个软件工具。
 到底选择哪种方法并不重要，目标都是一样的。具体的更新Bootloader固件的方法可以使用Arduino IDE的工具菜单栏配置，一旦配置好，并且已安装好更新Bootloader固件的软件工具，
 以及两种格式的最新版Bootloader固件都已下载到“..\packages\adafruit\hardware\nrf52\0.20.5\bootloader\bluefi_nrf52840\”文件夹。
 如图3.29所示，最后点击“工具——>烧录引导程序(Burning Bootloader)”即可。

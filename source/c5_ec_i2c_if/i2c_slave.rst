@@ -23,11 +23,11 @@ Arduino的I2C通讯接口的硬件抽象层不仅支持主机模式，也支持�
 .. Note::  I2C硬件抽象层接口(仅从机模式的接口)
 
   1. **begin(slave_addr)**，将I2C通讯接口配置为从机模式，并配置惟一的7位从机地址、SCL和SDA的I/O引脚、SCL时钟速度(使用默认的设置)、中断等。注意，只能在初始化时调用一次
-  2. **write(val)/**，向主机写/发送数据(当主机请求数据时，即“OnRequest”事件发生后)。这个接口还有另外两种形式：write(val[], len)和write(string)
-  3. **available()**，返回接收缓冲区中有效的/可读取的字节数据个数，即“onReceive”事件发生后使用该接口检查接收缓冲区的有效数据字节数
-  4. **read()**，从接收缓冲区读取有效数据
-  5. **onReceive(cb_rev)**，注册“onReceive”事件的回调函数，当“onReceive”事件发生后需要执行的代码，譬如调用“available()”检查可读数据个数、调用“read()”读取接收缓冲区的数据并处理
-  6. **onRequest(cb_req)**，注册“OnRequest”事件的回调函数，当“OnRequest”事件发生后需要执行的代码，譬如调用“write()”发送数据给主机
+  2. **onReceive(cb_rev)**，注册“onReceive”事件的回调函数，当“onReceive”事件发生后需要执行的代码，譬如调用“available()”检查可读数据个数、调用“read()”读取接收缓冲区的数据并处理
+  3. **onRequest(cb_req)**，注册“OnRequest”事件的回调函数，当“OnRequest”事件发生后需要执行的代码，譬如调用“write()”发送数据给主机
+  4. **write(val)/**，向主机写/发送数据(当主机请求数据时，即“OnRequest”事件发生后)。这个接口还有另外两种形式：write(val[], len)和write(string)
+  5. **available()**，返回接收缓冲区中有效的/可读取的字节数据个数，即“onReceive”事件发生后使用该接口检查接收缓冲区的有效数据字节数
+  6. **read()**，从接收缓冲区读取有效数据
 
 注意，Arduino平台的I2C硬件抽象层的主机模式和从机模式的接口都被封装在“TwoWire类”中，详见页面 [1]_ ，从机模式的接口仅有这6种(具体种类还与Arduino内核的版本有关)，
 主机模式共8种接口(见前一节)，其中部分接口是主机模式和从机模式共用的，如“write()”、“read()”、“available()”等，部分接口是各自专用的，

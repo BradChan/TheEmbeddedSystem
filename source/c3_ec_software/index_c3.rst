@@ -24,4 +24,3 @@
    summary.rst
    problems.rst
 
-

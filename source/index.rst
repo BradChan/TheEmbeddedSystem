@@ -78,26 +78,31 @@
 .. toctree::
    :maxdepth: 2
 
-   c8_ble/index_c8.rst
-
+   c8_can/index_c8.rst
 
 
 .. toctree::
    :maxdepth: 2
 
-   c9_iot_wifi_ethernet/index_c9.rst
+   c9_ble/index_c9.rst
+
+
+.. toctree::
+   :maxdepth: 2
+
+   ca_iot_wifi_ethernet/index_c10.rst
 
 --------------------------------------------------
 
 .. toctree::
    :maxdepth: 2
 
-   ca_references/index_ca.rst
+   cb_references/index_c11.rst
 
 
 .. toctree::
    :maxdepth: 2
 
-   cb_acknowledge/index_cb.rst
+   cc_acknowledge/index_c12.rst
 
 

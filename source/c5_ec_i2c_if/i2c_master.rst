@@ -20,11 +20,11 @@
 .. Note::  I2C硬件抽象层接口(仅主机模式的接口)
 
   1. **begin()**，将I2C通讯接口配置为主机模式，并配置SCL和SDA的I/O引脚、SCL时钟速度(使用默认的设置)、中断等。注意，只能在初始化时调用一次
-  2. **Wire.setClock(clockFrequency)**，重置I2C通讯接口的SCL时钟速度，参数clockFrequency以Hz为单位，譬如400,000
+  2. **setClock(clockFrequency)**，重置I2C通讯接口的SCL时钟速度，参数clockFrequency以Hz为单位，譬如400,000
   3. **beginTransmission(slave_addr)**，产生“Start时序”，并将后续会话的从地址参数配置为slave_addr(7位地址!!)，直到“endTransmission()”执行后
-  4. **endTransmission()**，(如果发送缓冲区不为空)将发送缓冲区中的数据传送给指定的从机，并产生“Stop时序”释放I2C总线
+  4. **endTransmission(stop)**，(如果发送缓冲区不为空)将发送缓冲区中的数据传送给指定的从机；参数“stop”的有效值是“true”或“false”，该参数指定本次传输结束时是否产生“Stop时序”释放I2C总线
   5. **write(val)/**，向从机写数据，必须在“beginTransmission(slave_addr)”和“endTransmission()”之间调用该接口。这个接口还有另外两种形式：write(val[], len)和write(string)
-  6. **requestFrom(slave_addr, quantity)**，向指定地址(slave_addr)的从机请求(读取)指定个数(quantity)的数据，然后使用“available()”和“read()”检查并读取数据
+  6. **requestFrom(slave_addr, quantity, stop)**，向指定地址(slave_addr)的从机请求(读取)指定个数(quantity)的数据，然后使用“available()”和“read()”检查并读取数据；"stop"参数的有效值是"true"或"false"，用于指定本次请求操作结束时是否发送STOP时序
   7. **available()**，返回接收缓冲区中有效的/可读取的字节数据个数，在调用“requestFrom(slave_addr, quantity)”后使用该接口检查请求回来的有效数据
   8. **read()**，从接收缓冲区读取请求到的有效数据
 

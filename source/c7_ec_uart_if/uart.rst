@@ -249,7 +249,7 @@ UART的发送控制单元将根据波特率发生器时钟将这些字节流转�
     typeElement elements[sizeFIFO];
   } typeFIFO;
 
-  void fifiInit(typeFIFO* fifo) {
+  void fifoInit(typeFIFO* fifo) {
     fifo->front=0; fifo->rear=0; fifo->count=0;
   }
   bool fifoIn(typeFIFO* fifo, typeElement dat) { 
@@ -273,7 +273,7 @@ UART的发送控制单元将根据波特率发生器时钟将这些字节流转�
     }
   }
 
-在UART等使用FIFO队列的外设功能单元中，使用硬件实现上述算法。这个算法由三个子程序组成，分别用于初始化队列(fifiInit)、数据项入列(fifoIn)和数据项出列(fifoOut)。
+在UART等使用FIFO队列的外设功能单元中，使用硬件实现上述算法。这个算法由三个子程序组成，分别用于初始化队列(fifoInit)、数据项入列(fifoIn)和数据项出列(fifoOut)。
 并将一片FIFO队列存储空间设计成结构体，称作typeFIFO，包含队首指针(front)、队尾指针(rear)、队列内可读数据项的个数(count)、保存队列数据项的数组。
 队列数据项的数据类型typeElement是首先指定的，上述算法中使用“uint8_t”型数据项。
 

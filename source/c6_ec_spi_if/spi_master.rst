@@ -156,9 +156,9 @@ BlueFi开源板的彩色LCD显示器的BSP几乎仅仅使用Arduino开源平台S
 现在你可以打开“../Documents/Arduino/libraries/BlueFi_TFT_eSPI/BlueFi_TFT_eSPI.h”文件了解我们的彩色LCD显示器接口的名称、参数等，
 基于这些接口，我们可以实现各种显示效果。
 
-下面我们来探索另外一个有趣的示例——康威生命游戏的模拟效果，如图6.13所示。
+下面我们来探索另外一个有趣的示例——康威生命游戏的模拟效果(取消gif格式动画)，如图6.13所示。
 
-.. image:: ../_static/images/c6/conway_game_of_life.gif
+.. image:: ../_static/images/c6/conway_game_of_life.jpg
   :scale: 50%
   :align: center
 

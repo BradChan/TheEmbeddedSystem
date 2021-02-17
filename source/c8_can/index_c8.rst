@@ -17,8 +17,8 @@ CAN2.0A/B(第一代CAN)和CAN FD(第二代CAN)已经被各汽车制造商接受�
    :maxdepth: 1
 
    intro_can.rst
-   can_if.rst
    can_protocol.rst
+   can_if.rst
    can_software.rst
    summary.rst
    problems.rst

@@ -49,7 +49,7 @@ CAN总线驱动器也有很多种型号，大多数半导体制造商都有CAN�
 
 根据CAN网络节点的硬件设计模型，图8.15是基于BlueFi的40P扩展接口的CAN接口的示例电路原理图。
 
-.. image:: ../_static/images/c8/canmode_hardware_design_example_bluefi_canif.jpg
+.. image:: ../_static/images/c8/cannode_hardware_design_example_bluefi_canif.jpg
   :scale: 33%
   :align: center
 
@@ -57,25 +57,53 @@ CAN总线驱动器也有很多种型号，大多数半导体制造商都有CAN�
 
 在图8.15所示的设计示例中，使用兼容CAN2.0B的独立CAN协议控制器IC——MCP2515，该协议控制器的详细资料链接都页面[2]，在页面[3]将会看到更多中CAN2.0B和CAN FD的独立协议控制器，
 对于我们的目的选择使用那种CAN协议控制器并无本质区别，但是作为量产的CAN网络节点产品来说，建议使用兼容CAN FD标准的控制器更为合理。
+MCP2515的内部结构参加图8.16。
 考虑BlueFi的40P扩展接口仅有3.3V供电电源，而且所有功能扩展接口的逻辑电平电压都采用3.3V，独立的CAN协议控制器MCP2515是一种宽工作电压的IC(允许2.7~5.5V)，
 我们可以使用BlueFi的40P扩展接口上的3.3V和GND为其供电，那么CAN总线收发器与CAN协议控制器之间的逻辑接口电压也必须采用3.3V的，
 如果CAN总线收发器的工作电压也采用3.3V，意味着我们的CAN接口拓展板采用3.3V单工作电源，这样的设计更为简化。
 在页面[4]中我们能找到很多种CAN总线收发器，SN65HVD230是价格较低的一种支持3.3V供电的CAN总线收发器。
 
+.. image:: ../_static/images/c8/cannode_hardware_design_mcp2515_structure.jpg
+  :scale: 45%
+  :align: center
+
+图8.16  兼容CAN2.0B的CAN协议控制器——MCP255的内部结构
+
 图8.15中将完整的CAN拓展板的电路原图分割为4个部分：BlueFi拓展接口、CAN协议控制器、CAN总线收发器和CAN总线接口插座。
 由于整个拓展板采用单3.3V供电，这个接口设计变得极为简单。独立的CAN协议控制器使用SPI接口与BlueFi主控制器(nRF52840)连接，
 CAN协议控制器与CAN总线收发器之间的连接是常规的，CAN总线接口插座使用易插拔的形式。每个拓展板上都设计2个CAN总线接口插座，
-目的是方便连线，三个BlueFi-CAN拓展板之间使用CAN总线通讯的实物连线如图8.16所示。从图8.15可以看出，两个CAN总线接口的插座上的CAN总线信号是相互连通的，
+目的是方便连线，三个BlueFi-CAN拓展板之间使用CAN总线通讯的实物连线如图8.17所示。从图8.15可以看出，两个CAN总线接口的插座上的CAN总线信号是相互连通的，
 接线时只要注意区分CAN_HI和CAN_LO两个信号即可。
 
 .. image:: ../_static/images/c8/cannode_bluefi_extended_board.jpg
   :scale: 30%
   :align: center
 
-图8.16  三个BlueFi-CAN拓展板之间使用CAN总线通讯的实物连接
+图8.17  三个BlueFi-CAN拓展板之间使用CAN总线通讯的实物连接
 
 由于BlueFi的主控制器(nRF52840)片内没有CAN协议控制器和CAN总线收发器等功能单元，我们使用SPI接口的独立CAN协议控制器IC为BlueFi扩展出CAN接口，
 整个CAN拓展板使用单3.3V供电电源使得拓展电路的设计非常简单。
+
+-------------------------
+
+当然，许多面向工业控制应用领域的MCU/SoC片上都带有硬件CAN协议控制器单元，譬如ARM Cortex-M3/M4/M4F内核的LPC1769(来自NXP半导体)、
+STM32F1xx/4xx(来自ST半导体)等片上都有1个或2个独立的CAN协议控制器单元，再如ESP32或ESP32-S2(来自上海乐鑫)片上带有一个CAN协议控制器单元，
+在乐鑫的文档中，CAN协议控制器单元被称作TWAI(即Two-Wire Automotive Interface的缩写)。
+事实上，CAN协议控制器是由一个多状态复杂时序逻辑电路和多个FIFO缓存组成的数字电路功能单元，很容易集成到MCU/SoC内部，或者使用FPGA内部逻辑单元和存储器来实现。
+片上CAN协议控制器单元通过片内并行总线(如APB)与CPU内核和RAM互联，这样的接口在访问速度方面远超SPI等接口，而且片上功能单元的寄存器和RAM之间很容易通过DMA方式传输数据。
+当我们需要缩短CAN总线接口的数据传输延迟时，使用片上CAN协议控制器将是首选的。
+
+图8.18是使用片上CAN协议控制器时的CAN总线节点上的硬件接口电路示例。使用片上CAN协议控制器时需要仔细查阅MCU/SoC的技术文档确定CAN接口引脚的分配规则，
+以及逻辑电平的电压等。
+
+.. image:: ../_static/images/c8/cannode_hardware_design_cancontroller_on_the_mcu.jpg
+  :scale: 30%
+  :align: center
+
+图8.18  使用MCU/SoC片上CAN协议控制器的CAN总线节点的硬件接口电路示例
+
+对比图8.15和图8.18的示例电路，或许你会问“为什么不将CAN总线收发器集成到MCU/SoC内部呢？” 考虑CAN总线收发器的一对差分信号比较特殊，
+无法与其他I/O引脚通用。
 
 -------------------------
 

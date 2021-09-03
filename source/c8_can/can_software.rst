@@ -306,7 +306,252 @@ MCP2515仅有2个mask寄存器其编号分别为0和1，6个filter寄存器的�
 
 -------------------------
 
+接下来我们使用CP2515的Python库、BlueFi的Python解释器和Python语言来了解CAN总线通讯的更多细节。我们知道，使用Python脚本语言可以避免长时间的编译和下载过程，
+在需要频繁修改代码的调试和测试阶段，Python语言具有更高的效率。
 
+当我们通过Arduino IDE编译和下载程序到BlueFi时，BlueFi的Python解释器固件已经被覆盖，如果需要恢复到Python解释器模式，
+请使用USB数据线将BlueFi与电脑连接好，并双击BlueFi的复位按钮，当电脑资源管理器中出现BLUEFIBOOT磁盘时，将Python解释器固件拖放到BLUEFIBOOT磁盘即可恢复BlueFi的Python解释器。
+当CIRCUITPY磁盘出现时，我们会发现之前的Python库、Python资源文件和code.py等文件都完好无损地保存着。具体的恢复过程请参考第4.1节最后一部分内容。
+
+在使用BlueFi、IoT模块和Python语言实现CAN总线通讯之前，请下载下面的压缩包到本地电脑上，这是MCP2515的Python库源码文件，
+
+. :download:`本节内容所用到的BlueFi的BSP源文件 <../_static/dl_files/bluefi_ch8_4/hiibot_mcp2515.zip>`
+
+解压后请将整个库文件夹拖放到CIRCUITPY磁盘的lib文件夹中，即“/CIRCUITPY/lib/”。然后打开“/CIRCUITPY/lib/hiibot_mcp2515/”文件夹，
+可以看到4个“.py”后缀的文件，包括“mcp2515.py”、“canio.py”、“can_timer.py”等，这些都是脚本源码，允许我们使用任意文本编辑器修改这些库文件。
+
+这些准备工作完毕后，我们首先运行一个示例程序，
+
+.. code-block::  python
+  :linenos:
+
+  import time
+  from hiibot_mcp2515.canio import Message
+  from hiibot_mcp2515.mcp2515 import MCP2515 as CANBus
+  ''' TODO: parameters of CANBus
+      CANBus(baudrate, loopback, silent, debug)
+          default: baudrate = 250000, 
+                  loopback = False, # True (selftest, silent=True)
+                  silent = False,   # True (as a can bus monitor)
+                  debug = False,    # True (print all message)
+  '''
+  can_bus = CANBus(loopback=True, silent=True) 
+  listener = can_bus.listen(timeout=0.1)
+
+  def listenMessage():
+      message_count = listener.in_waiting() # get message number
+      if message_count>0:
+          inMessage = listener.receive()
+          return inMessage
+      else:
+          return None
+
+  def sendMessage(message_id, message_data):
+      message = Message(message_id, data=message_data)
+      if can_bus.send(message):
+          print("Successfully send one message")
+      else:
+          print("Failed to send")
+
+  sendNoCnt = 0
+  sendDlyCnt = 0
+  while True:
+      time.sleep(0.001)
+      inMsg = listenMessage()
+      if inMsg is not None:
+          print("received: ID=", hex(inMsg.id), ", DATA {", str(inMsg.data, 'utf-8'), "}")
+      sendDlyCnt += 1
+      if sendDlyCnt>10:
+          sendDlyCnt = 0
+          outMsg = 'No: ' + str(sendNoCnt%10000)      # a string
+          sendMessage(0x407, bytes(outMsg, 'utf-8'))  # b'No: xxxx'
+          sendNoCnt += 1
+
+使用复制-粘贴等操作将这个示例程序源码保存到CIRCUITPY磁盘的根目录中的code.py文件，请注意Python脚本语言的程序块对齐以避免错误。
+或者打开MU编辑器，将这个示例代码粘贴到MU编辑器的新建文件中，并调整程序块的对齐，然后保存到CIRCUITPY磁盘的根目录中的code.py文件。
+运行示例程序期间请打开MU的“串口”控制台，我们将会看到以下的提示：
+
+.. code-block::  python
+  :linenos:
+
+  Successfully send one message
+  received: ID= 0x407 , DATA { No: 0 }
+  Successfully send one message
+  received: ID= 0x407 , DATA { No: 1 }
+  Successfully send one message
+  received: ID= 0x407 , DATA { No: 2 }
+  Successfully send one message
+  received: ID= 0x407 , DATA { No: 3 }
+
+显然这是一个2行提示信息的不断重复：首先提示成功地发送一个消息，然后提示接收的消息id和data。在示例程序的主循环中，
+即第31～41行的代码中，首先程序暂停执行1ms；然后调用子程序“listenMessage()”并测试其返回值是否为“None”，如果不为“None”则打印接收的消息id和data；
+然后将变量“sendDlyCnt”加一并判断其是否大于10，如果大于10则将其清零，设置字符串outMsg为“No: xxx”(其中的xxx是将变量“sendNoCnt”转换的字符串)，
+调用“sendMessage(0x407, bytes(outMsg, 'utf-8'))”将字符串outMsg转换成字节数组(bytes)作为消息并设置ID为0x407发送出去。
+
+大体上主循环程序就是检测是否接收到消息，如果接收到则打印输出消息的消息id和data，当主循环次数达10次时发送一个id为0x407且消息为“No: xxx”的字符串。
+测试这个示例程序只需要一个BlueFi和一个IoT模块，因为这个示例程序初始化期间将MCP2515配置为“loopback”模式，即自发自收的模式。
+这种看似没有意义的“loopback”模式非常适合于侦测MCU/SoC与CAN协议控制器之间连通性、CAN协议控制器的完整性，尤其适合片外扩展的CAN协议控制器，
+譬如我们未将BlueFi插入IoT模块直接运行这个示例程序，不仅看不到接收的提示信息，甚至会出现程序错误退出的现象。
+
+几乎所有CAN协议控制器都支持“loopback”模式，无论是独立的片外扩展的CAN协议控制器或是片上的，该模式作为CAN总线的软硬件自检目的。
+示例代码的第11行语句在实例化MCP2515的“CANBus”类时，我们将输入参数“loopback”和“silent”都设置为“True”，
+也就是将MCP2515初始化成“loopback”模式且保持“沉默”(即silent=True)。让CAN协议控制器保持“沉默”也就是禁止向CAN总线收发器发送任何信息。
+保持“沉默”的CAN协议控制器仍能从CAN收发器接收信息，他就好比一个侦听节点，仅侦听CAN总线上的消息但从不发送消息。
+
+通过这个示例，我们不仅了解CAN协议控制器的更多工作模式，还初步了解MCP2515的Python库接口，包括初始化配置、接收消息和发送消息。
+如果需要更详细地了解这个MCP2515库的接口，只需要打开“/CIRCUITPY/lib/hiibot_mcp2515/”文件夹中的源文件即可。
+如果需要跟C/C++的MCP2515库做个对比，他们在工作原理方面几乎完全相同，区别是各种操作接口的名称和输入/输出参数等细节。
+
+下面我们尝试解决前面的3-DoF机械手的问题，首先来模拟关节马达控制器，即从节点。每个从节点只需要接收两种消息：ID=0x7F0和ID=0x3Fx(x=1,2,3，即本节点的识别码)。
+当收到ID=0x7F0的消息时解析数据域的第一个字节作为状态码(停止或工作状态)并发送ID=0x7Fx(x=1,2,3，即本节点的识别码)的空数据域消息；
+当收到ID=0x3Fx的消息且x与本节点识别码一致则解析数据域的前后4个字节分别作为设定的关节角位移和角速度，执行完毕后发送ID=0x7Fx(x=1,2,3，即本节点的识别码)的消息，
+数据域的前4个字节为本节点故障码，后4个字节为本节点的实际角位移。模拟这样功能的从节点的示例代码如下：
+
+.. code-block::  python
+  :linenos:
+
+  import struct
+  import time
+  from hiibot_mcp2515.canio import Match, Message, BusState
+  from hiibot_mcp2515.mcp2515 import MCP2515 as CANBus
+  can_bus = CANBus() # default parameters were used (Normal Mode) 
+  listener = can_bus.listen(matches=[Match(0x7F0, mask=0x7FF), Match(0x3F1, mask=0x7FF),], timeout=0.01)  # 10ms
+  canbusStateInfo = ('ACTIVE', 'WARNING', 'PASSIVE', 'OFF',)
+  setPosition, setSpeed = 0, 0
+  node_id = 1
+  work_mode = ('stopped', 'working', 'trouble',)
+  working = 1 # 0:stopped, 1:working, 2:trouble
+  rok = False
+
+  def recv():
+      global rok, working, setPosition, setSpeed
+      __inMsg = listener.receive()
+      if __inMsg is not None:
+          __id, __msg = __inMsg.id, __inMsg.data
+          if __id==0x7F0:
+              working = 1 if __msg[0]==1 else 0
+              can_bus.send( Message( id=(0x7F0|node_id), data=b'' ) )  # response
+              print(f'response for "0x7F0", work_mode={work_mode[working]}')
+          elif (__id&(0x3F0|node_id))==(0x3F0|node_id):
+              __ps = struct.unpack('<ll', __msg)  # 2 * signed long
+              setPosition, setSpeed = __ps[0], __ps[1]
+              if working==1:
+                  rok = True
+                  print(f'received: new position={setPosition}, maximal speed={setSpeed}')
+              else:
+                  print(f'received new command but work_mode={work_mode[working]}')
+          else:
+              pass
+
+  old_bus_state = BusState.ERROR_ACTIVE
+  while True:
+      recv()
+      bus_state = can_bus.state
+      if bus_state != old_bus_state:
+          old_bus_state = bus_state
+          print(f"Bus state changed to {canbusStateInfo[bus_state]}")
+          if bus_state in (BusState.ERROR_PASSIVE, BusState.BUS_OFF,):
+              print('CAN Bus is troubled!!')
+          elif bus_state in (BusState.ERROR_ACTIVE, BusState.ERROR_WARNING, ):
+              print('CAN Bus is normal')
+      if rok:
+          rok = False
+          __error = 0
+          __realPosition = setPosition
+          message = Message( id=(0x480|node_id), data=struct.pack("<Il", __error, __realPosition) )
+          can_bus.send(message)
+      time.sleep(0.001)
+
+请注意，按照问题要求可知，每个马达控制器的从节点识别码是惟一的，对于不同的从节点必须修改第9行代码变量node_id的值，必须确保这个值的惟一性。
+主循环中调用子程序“recv()”来接收并处理CAN总线上的消息，当收到消息后根据消息ID的值分别处理和响应，该子程序和主程序的“if ok”程序块正好实现前述的从节点的功能模拟。
+
+对于3-DoF机械手的主控制器，即主节点，其功能稍显复杂，功能描述就占用更多文字。模拟主节点功能的代码如下：
+
+.. code-block::  python
+  :linenos:
+
+  import struct
+  import time
+  from hiibot_mcp2515.canio import Match, Message, BusState
+  from hiibot_mcp2515.mcp2515 import MCP2515 as CANBus
+  from hiibot_bluefi.basedio import Button
+  btn = Button()
+  can_bus = CANBus() # default parameters were used (Normal Mode) 
+  listener = can_bus.listen(timeout=0.01)  # all id 
+  canbusStateInfo = ('ACTIVE', 'WARNING', 'PASSIVE', 'OFF',)
+  work_mode = ('stopped', 'working', 'trouble',)
+  onlineNodes = {}  # {1:online, ..}
+  setPosition, realPositionNodes = {}, {}  # {1:xxx, ..}
+  errorCodeNodes = {}  # {1:xx, ..}
+  deltaPosition = 100
+
+  def recv():
+      global onlineNodes, errorCodeNodes, realPositionNodes
+      __inMsg = listener.receive()
+      if __inMsg is not None:
+          __id, __msg = __inMsg.id, __inMsg.data
+          if (__id&0x7F0)==0x7F0:
+              if not (__id&0x00F) in onlineNodes:
+                  onlineNodes[__id&0x00F] = 'online'
+                  print(f'onlineNodes: {onlineNodes}')
+          elif (__id&0x480)==0x480:
+              __ps = struct.unpack('<Il', __msg)
+              errorCode, setPosition = __ps[0], __ps[1]
+              errorCodeNodes[__id&0x00F] = __ps[0]
+              realPositionNodes[__id&0x00F] = __ps[1]
+              print(f'received Node {__id&0x00F}: errorCode={__ps[0]}, real poseiton={__ps[1]}')
+          else:
+              pass
+
+  old_bus_state = BusState.ERROR_ACTIVE
+  print('Send a message for starting and polling online')
+  can_bus.send( Message( id=0x7F0, data=b'\x01' ) )
+  pret = time.monotonic()
+  while True:
+      time.sleep(0.001)
+      recv()
+      btn.Update()
+      bus_state = can_bus.state
+      if bus_state != old_bus_state:
+          old_bus_state = bus_state
+          print(f"Bus state changed to {canbusStateInfo[bus_state]}")
+          if bus_state in (BusState.ERROR_PASSIVE, BusState.BUS_OFF,):
+              print('CAN Bus is troubled!!')
+          elif bus_state in (BusState.ERROR_ACTIVE, BusState.ERROR_WARNING, ):
+              print('CAN Bus is normal')
+      if (time.monotonic()-pret)>2.0:
+          can_bus.send( Message( id=0x7F0, data=b'\x01' ) )
+          pret = time.monotonic()
+      if btn.A_wasPressed:
+          for nodeID in onlineNodes:
+              if setPosition.get(nodeID) is None:
+                  setPosition[nodeID] = deltaPosition
+              else:
+                  setPosition[nodeID] += deltaPosition
+              can_bus.send( Message( id=(0x3F0|nodeID), data=struct.pack("<ll", setPosition[nodeID], 1200) ) )
+              print(f'send Node {nodeID} new position={setPosition[nodeID]}, and speed=1200rpm')
+      if btn.B_wasPressed:
+          for nodeID in onlineNodes:
+              if setPosition.get(nodeID) is None:
+                  setPosition[nodeID] = -deltaPosition
+              else:
+                  setPosition[nodeID] -= deltaPosition
+              can_bus.send( Message( id=(0x3F0|nodeID), data=struct.pack("<ll", setPosition[nodeID], 1200) ) )
+              print(f'send Node {nodeID} new position={setPosition[nodeID]}, and speed=1200rpm')
+
+与从节点的代码相比，主节点的代码的确多了近20行，两者的主要区别是主节点的响应A和B按钮的代码(从节点没有这些功能)。根据主节点的要求，
+当按下A按钮时增加所有从节点的关节角位移，当按下B按钮时减小所有从节点的关节角位移，这些都需要发送ID=0x3Fx(x=1,2,3)且数据域前后4字节分别为设定角位移和角速度值的CAN消息，
+即第59行和第67行的代码。主节点还需要侦测那些从节点在线、那些从节点已完成定位操作等，主循环中调用函数“recv()”来实现这些功能。
+仔细对比主节点和从节点的“recv()”函数的定义，同样是根据接收到的消息的ID来分别处理。
+
+如果需要模拟解决这个3-DoF机械手的问题，我们至少需要2个BlueFi和IoT模块，他们分别模拟主节点和从节点，他们的程序代码都各自不同，
+如果有多个从节点时，每个从节点的第9行代码中变量“node_id”的值必须各不相同以确保从节点识别码的惟一性。模拟试验之前的准备工作需要我们非常仔细。
+
+当所有节点的CAN总线接口使用双绞线连接起来后，并为所有节点通电，通过扮演主节点的BlueFi的屏幕显示的信息即可了解在线的节点等信息，
+按下该节点的A或B按钮进一步观察所有节点的屏幕上提示的信息。具体的模拟试验现象和结果不再赘述。
+
+经过模拟试验之后，我们需要仔细分析示例中用到的MCP2515库的接口，以及每种接口的输入参数和返回值，并对照试验中的现象就很容易理解接口的设计和用法。
+这样的分析过程不仅有利于掌握CAN总线的基本协议和通讯机制，还能掌握面向对象的软件设计和封装。
 
 -------------------------
 
@@ -346,5 +591,5 @@ CANOpen等高层网络协议标准的目标是提升行业内设备之间的兼�
 参考文献：
 ::
 
-  [1] 
+  [1] https://docs.python.org/3/library/struct.html
 

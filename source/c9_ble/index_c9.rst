@@ -1,5 +1,5 @@
 ================================
-第9章 蓝牙和无线电通讯
+第9章 无线电通讯和无线网络
 ================================
 
 基于UART和异步串行通讯接口的各种多节点网络中，信息广播(Broadcast)和寻址是基本的通讯机制，这些机制显然来自历史更为悠久的无线电通讯(Radio Communication)领域。
@@ -17,9 +17,11 @@
 .. toctree::
    :maxdepth: 1
 
-   bluetooth.rst
    radio_communication.rst
-   ble.rst
+   lora.rst
+   bluetooth.rst
+   wifi.rst
+   4gnbiot.rst
    summary.rst
    problems.rst
 

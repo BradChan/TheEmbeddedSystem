@@ -18,8 +18,8 @@
    :maxdepth: 1
 
    radio_communication.rst
-   lora.rst
    bluetooth.rst
+   lora.rst
    wifi.rst
    4gnbiot.rst
    summary.rst

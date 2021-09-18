@@ -84,13 +84,13 @@
 .. toctree::
    :maxdepth: 2
 
-   c9_ble/index_c9.rst
+   c9_wln/index_c9.rst
 
 
 .. toctree::
    :maxdepth: 2
 
-   ca_iot_wifi_ethernet/index_c10.rst
+   ca_bbniot/index_c10.rst
 
 --------------------------------------------------
 

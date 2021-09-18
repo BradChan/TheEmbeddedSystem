@@ -17,7 +17,8 @@ import sys
 
 # -- Project information -----------------------------------------------------
 
-project = 'Embedded System'
+#project = 'Embedded System'
+project = 'Embedded System and IoT Application'
 copyright = '2019, Wang ZF (CME-ZJUT)'
 author = 'Wang Zhongfei'
 

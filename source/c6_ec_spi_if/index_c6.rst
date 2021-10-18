@@ -26,5 +26,15 @@ QSPI(Quad SPI)接口的数据信号达4个，假设同步时钟信号的频率�
    summary.rst
    problems.rst
 
+-------------------------------
 
+.. Note::  SPI接口相关的基础概念：
+
+   1. **SPI** (Serial Peripheral Interface)，一种高速同步串行外设接口，同步时钟频率可达64MHz或更高，常用于嵌入式系统内高速外设的拓展，如TFT-LCD/RGB-LCD、Ethernet、SD卡、NOR-FlashROM/NAND-FlashROM等。
+   2. **DSPI** (Dual SPI)，DSPI仍使用4线接口，除了NSS和SCLK之外，MOSI/SDI和MISO/SDO被用作2位宽的双向串行数据线(即SDIO0、SDIO1)，在保持同步时钟频率不变的情况下，该接口的数据传输速度是SPI接口的2倍。
+   3. **QSPI** (Quad SPI)，4位SPI(相当于4倍速传输)，QSPI使用4位宽度的双向数据线(D0~D3)，在保持同步时钟频率不变的情况下，该接口的数据传输速度是SPI接口的4倍，常用于系统内扩展大容量闪存。一般的QSPI接口使用FIFO缓存机制，而SPI接口则使用寄存器直接寻址。
+   4. **SPI master**，SPI接口的主设备端，也是同步时钟信号(SCLK)的驱动端。SPI master控制整个传输过程，以及通讯时序(有效的时钟边沿、空闲状态的相位等)。
+   5. **SPI slave**，SPI接口的从设备端，在传输过程中根据SPI master发出的指令或同步时钟移出或移入串行数据。
+   6. **D/C** (Data/Command)，改进型SPI的控制信号，由SPI master驱动，该信号为高电平时表示正在传输数据帧，该信号为低电平时表示正在传输命令帧。
+   7. **Busy**，改进型SPI的握手信号，由SPI slave驱动，该信号为高电平时表示从设备处于忙状态，不希望继续传输数据或指令；反之则表示从设备处于空闲状态，可以传输数据或指令。
 

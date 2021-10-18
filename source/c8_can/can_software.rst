@@ -185,27 +185,35 @@ A按钮就像一个触发开关，只要按下一次BlueFi立即发送一个CAN�
 这可以有效地提升CAN协议控制器和MCU/SoC之间的数据传输效率，也能节约MCU/SoC的时间。
 
 几乎所有的CAN协议控制器都支持ID滤波器功能，而且都采用mask和filter两种配置寄存器，不同的CAN协议控制器的惟一区别是mask和filter寄存器的个数。
-如何使用ID滤波器的mask和filter呢？对于11位的ID，可接收的ID为：
+如何使用ID滤波器的mask和filter呢？对于11位的ID，可接受的ID必须满足等式“(~(filterValue ^ ID) | (~(maskValue & 0x7FF)))=0x7FF” (注：“～”表示反码运算；“^”表示异或运算；“&”表示与运算；“|”表示或运算)，
+即可接受的ID包括：
 
-  -  ( (maskValue & 0x7FF) | filterValue)
-  -  (~(maskValue & 0x7FF) & filterValue)
+  -  (~(maskValue & 0x7FF) | filterValue)
+  -  ( (maskValue & 0x7FF) & filterValue)
 
-对于29位的扩展ID，可接收的ID为：
+对于29位的扩展ID，可接受的ID必须满足等式“(~(filterValue ^ ID) | (~(maskValue & 0x1FFF-FFFF)))=0x1FFF-FFFF” ，即可接受的ID包括：
 
-  -  ( (maskValue & 0x1FFF-FFFF) | filterValue)
-  -  (~(maskValue & 0x1FFF-FFFF) & filterValue)
+  -  (~(maskValue & 0x1FFF-FFFF) | filterValue)
+  -  ( (maskValue & 0x1FFF-FFFF) & filterValue)
 
-对于具有m个mask和n个filter寄存器的CAN协议控制器，需要根据上述两种情况分别计算，可以确定2*m*n个(或类)可接收ID。
+对于具有m个mask和n个filter寄存器的CAN协议控制器，需要根据上述两种情况分别计算，可以确定2*m*n个(或类)可接受的ID。对于目标ID的任一一个位，可接受的条件如下表所示：
+
+.. image:: ../_static/images/c8/can_accepted_id_bit_condition.jpg
+  :scale: 25%
+  :align: center
+
+当消息ID的所有位都完全满足上标的可接受位的条件时，CAN协议控制器才会将该消息缓存供应用程序读取该消息。
+
 在上面示例中，MCP2515具有2个mask寄存器和6个filter寄存器，我们想2个mask寄存器写入同一值0x3FF，向6个filter寄存器分别写入“1~6”，
-根据上面的可接收ID的计算规则可确定：
+根据上面的可接受ID的计算规则，可确定：
 
-  -  ( (0x3FF & 0x7FF) | [0x001,0x002,0x003,0x004,0x005,0x006]) = [0x401,0x402,0x403,0x404,0x405,0x406]
-  -  (~(0x3FF & 0x7FF) & [0x001,0x002,0x003,0x004,0x005,0x006]) = [0x001,0x002,0x003,0x004,0x005,0x006]
+  -  (~(0x3FF & 0x7FF) | [0x001,0x002,0x003,0x004,0x005,0x006]) = [0x401,0x402,0x403,0x404,0x405,0x406]
+  -  ( (0x3FF & 0x7FF) & [0x001,0x002,0x003,0x004,0x005,0x006]) = [0x001,0x002,0x003,0x004,0x005,0x006]
 
 这些逻辑运算的结果即可说明“myid=0x409”时示例程序不能呈现最初的效果。
 
-根据可接收ID的计算规则，如果将mask寄存器的每一个位都设置为‘0’时，则只能接收由filter寄存器指定的ID；如果将mask寄存器的每一个位都设置为‘1’时，
-则所有ID都是可接收的。
+根据可接受ID的计算规则，如果将mask寄存器的每一个位都设置为‘1’时，则只能接收由filter寄存器指定的ID；如果将mask寄存器的每一个位都设置为‘0’时，
+则所有ID都是可接受的。
 
 现在我们需要来看一看上面示例中用到的CAN总线接口库，图8.21给出“../Documents/Arduino/libraries/CAN_MCP2515/”库文件夹中的主要文件说明，
 除了上面使用过的“transceiver_bluefi”示例程序之外，在“examples”子文件夹中还有其他一些示例程序。这个使用SPI接口扩展的MCP2515的CAN总线接口库的源文件在“src”子文件夹中，

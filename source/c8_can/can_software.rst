@@ -29,12 +29,12 @@ IoT模块使用BlueFi的P13~P15等3个引脚分别作为SPI接口的SCK、MISO�
 
 再下载下面的压缩包，即“CAN_MCP2515.zip”文件，然后将该压缩包解压到“../Documents/Arduino/libraries/”文件夹中，
 
-. :download:`本节内容所用到的BlueFi的BSP源文件 <../_static/dl_files/bluefi_ch8_4/CAN_MCP2515.zip>`
+. :download:`Arduino平台的MCP2515库文件 <../_static/dl_files/bluefi_ch8_4/CAN_MCP2515.zip>`
 
-接着下载下面的压缩包，即“bluefi_nrf52840.zip”文件，然后将该压缩包解压到RF52的Arduino安装路径，
+接着下载下面的压缩包，即“bluefi_nrf52840.zip”文件，其中的两个文件是BlueFi在Arduino平台的引脚定义，将该压缩包解压到RF52的Arduino安装路径的变种文件夹，
 即“../Arduino/packages/adafruit/hardware/nrf52/0.21.0/variants/”文件夹，并覆盖该文件夹中已有的“bluefi_nrf52840”文件夹，
 
-. :download:`本节内容所用到的BlueFi的BSP源文件 <../_static/dl_files/bluefi_ch8_4/bluefi_nrf52840.zip>`
+. :download:`BlueFi的兼容Arduino的引脚定义文件 <../_static/dl_files/bluefi_ch8_4/bluefi_nrf52840.zip>`
 
 上述3个压缩包分别是BlueFi的BSP文件、CAN总线接口库文件(使用MCP2515)和BlueFi的兼容Arduino的引脚定义文件，
 直接使用这些源文件可以快速搭建BlueFi和IoT扩展板的CAN总线通讯测试环境，当然你也可以自行修改这些源码以及对应的示例程序实现其他功能。
@@ -323,7 +323,7 @@ MCP2515仅有2个mask寄存器其编号分别为0和1，6个filter寄存器的�
 
 在使用BlueFi、IoT模块和Python语言实现CAN总线通讯之前，请下载下面的压缩包到本地电脑上，这是MCP2515的Python库源码文件，
 
-. :download:`本节内容所用到的BlueFi的BSP源文件 <../_static/dl_files/bluefi_ch8_4/hiibot_mcp2515.zip>`
+. :download:`mcp2515的Python库源码文件 <../_static/dl_files/bluefi_ch8_4/hiibot_mcp2515.zip>`
 
 解压后请将整个库文件夹拖放到CIRCUITPY磁盘的lib文件夹中，即“/CIRCUITPY/lib/”。然后打开“/CIRCUITPY/lib/hiibot_mcp2515/”文件夹，
 可以看到4个“.py”后缀的文件，包括“mcp2515.py”、“canio.py”、“can_timer.py”等，这些都是脚本源码，允许我们使用任意文本编辑器修改这些库文件。

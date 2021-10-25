@@ -43,7 +43,7 @@ IoT模块使用BlueFi的P13~P15等3个引脚分别作为SPI接口的SCK、MISO�
 并将BlueFi和IoT模块与电脑USB端口连接好，点击编译并下载，我们即可将第一个示例程序下载到两个BlueFi的FlashROM中。
 
 如果你不打算编译和修改示例程序，可以直接将“../Documents/Arduino/libraries/CAN_MCP2515/examples/transceiver_bluefi/transceiver_bluefi.uf2”文件拖放到BLUEFFIBOOT磁盘即可。
-还记得如何把连接到电脑的BlueFi映射成名称为“BLUEFIBOOT”的磁盘吗？(用USB数据线激昂BlueFi和电脑连接好之后，双击BlueFi的复位按钮，
+还记得如何把连接到电脑的BlueFi映射成名称为“BLUEFIBOOT”的磁盘吗？(用USB数据线将BlueFi和电脑连接好之后，双击BlueFi的复位按钮，
 BlueFi的5颗彩灯全部亮绿色同时电脑的资源管理器中将出现BLUEFIBOOT磁盘)。
 
 两个BlueFi一旦开始运行示例程序，打开与BlueFi连接的电脑上Arduino IDE的串口监视器(即控制台)，然后按下任一BlueFi的A按钮，

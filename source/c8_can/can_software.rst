@@ -585,9 +585,10 @@ MCP2515仅有2个mask寄存器其编号分别为0和1，6个filter寄存器的�
 
 CANopen协议要求CAN总线上的每个节点都有惟一的识别码(ID)，而且节点识别码本身也是一种对象。而且兼容CANopen协议的设备节点分为主节点和从节点两类，
 主节点可以发起网络管理帧，包括对所有从节点的启动、停止、暂停、继续等操作指令，但从节点无需应答。主节点也可以使用从节点的惟一识别码发起一对一的问答型通讯，
-常用操作就是读取或设置某个节点上的对象的值，这种操作的协议帧的ID由4位命令码和7位从节点识别码组成(在CANopen协议中称作COB-ID)，
+常用操作就是读取或设置某个节点上的对象的值，这种操作的协议帧的ID由4位命令码和7位从节点识别码组成(在CANopen协议中称作COB-ID，即通讯对象ID)，
 8字节数据域中首个字节是命令码(包括读/写单字节/双字/四字节等6种操作的命令)，第2和3字节是对象的索引，第4字节是对象的子索引，其余的4个字节则是对象的值，
 对于读操作来说这4个字节都是0。虽然CANopen协议帧包含更多个信息域，但他们仍包含在标准CAN数据帧的ID和数据域中。此外，ACANopen协议不支持远程请求帧。
+想要详细地掌握CANopen协议，建议阅读 [4]，该参考书对CAN总线和构建于CAN总线之上的CANopen协议的工作机制做了详细地阐述。
 
 CANopen协议并不涉及CAN总线通讯的硬件和传输控制，仅仅是对兼容CANopen设备上的资源使用对象及其字典进行管理，主节点使用CANopen协议帧来访问从节点上的对象，
 如果我们将前面的3-DoF机械臂的主控制器和关节马达控制器设计成兼容CANopen协议的节点，那么解决上面的问题会变得更容易。
@@ -605,4 +606,5 @@ CANopen等高层网络协议标准的目标是提升行业内设备之间的兼�
   [1] https://docs.python.org/3/library/struct.html
   [2] https://www.can-cia.org/groups/specifications/
   [3] https://en.wikipedia.org/wiki/CANopen
+  [4] Pfeiffer Olaf,  A. Ayre, and C. Keydel, Embedded Networking with CAN and CANopen, Copperhill Media Corporation, 2008
 

@@ -106,7 +106,7 @@ PWM信号是一种频率固定的脉冲宽度调制信号，脉冲宽度承载�
 低电平时禁止放大器工作(喇叭被静音)；46号引脚与音频放大器的信号输入连接，从46号引脚输出的方波脉冲放大后推动喇叭发出声音。
 示例中还用到Arduino的随机数发生器函数——“random(min, max)”，调用该函数将会返回(min, max]区间内的一个随机整数。
 
-根据调用时的实参个数，“tone”函数有两种形态：
+根据调用时的实参个数，“tone”函数有两种形态的接口：
 
   1. tone(pin, frequency)
   2. tone(pin, frequency, duration)
@@ -120,7 +120,6 @@ PWM信号是一种频率固定的脉冲宽度调制信号，脉冲宽度承载�
 如果我们想用BlueFi输出一段自定义的旋律，或许你首先“唱一段旋律”，再根据“唱出”的每一个音调确定其频率形成自定义旋律的频率列表和持续时间(拍数)列表，最后编程实现旋律播放。
 
 此外，MIDI(乐器数字接口)号也是一种已读的基本音调的识别形式，每一个MIDI号对应一种频率的音调，譬如60号对应“中音C调(C5)”的频率为523Hz。
-
 
 -------------------------
 
@@ -165,7 +164,8 @@ PWM信号是一种频率固定的脉冲宽度调制信号，脉冲宽度承载�
   class Speak {
 
     public:
-      Speak();
+      Speak(uint8_t audioOut=46, uint8_t enPower=45, uint8_t bpm=120);
+      void begin(void);
       void playTone(uint16_t frequency, uint32_t duration=0);
       void stop(void);
       void playMIDI(uint8_t midi, uint8_t beat=0);
@@ -173,12 +173,10 @@ PWM信号是一种频率固定的脉冲宽度调制信号，脉冲宽度承载�
       uint8_t changeBPMwith(int8_t bpm);
       void enableAudio(bool en=true);
 
-  private:
+    private:
       uint8_t __bpm;
-      const uint8_t __pinAPW = 45;   // enable audio
-      const uint8_t __pinAudio = 46; // audio signal
-      
-
+      uint8_t __pinAPW;   // pin of Enable Power of Audio
+      uint8_t __pinAudio; // pin of Audio signal output
   };
 
   #endif // ___BLUEFI_SPEAK_H_
@@ -190,12 +188,17 @@ PWM信号是一种频率固定的脉冲宽度调制信号，脉冲宽度承载�
 
   #include "BlueFi_Speak.h"
 
-  Speak::Speak() {
-      __bpm = 120; // 120 (beats/minute), 500ms/beats
+  Speak::Speak(uint8_t audioOut, uint8_t enPower, uint8_t bpm) {
+      __bpm = bpm; // 120 (beats/minute), 500ms/beats
+      __pinAudio = audioOut;  // pin of Audio signal output
+      __pinAPW = enPower;  // pin of Enable Power of Audio
+  }
+
+  void Speak::begin(void){
       pinMode(__pinAudio, OUTPUT);
       digitalWrite(__pinAudio, LOW);
       pinMode(__pinAPW, OUTPUT);
-      digitalWrite(__pinAPW, HIGH);
+      digitalWrite(__pinAPW, LOW);
   }
 
   void Speak::playTone(uint16_t frequency, uint32_t duration) {
@@ -204,6 +207,7 @@ PWM信号是一种频率固定的脉冲宽度调制信号，脉冲宽度承载�
   }
 
   void Speak::stop(void) {
+      digitalWrite(__pinAPW, LOW);
       noTone(__pinAudio);
   }
 
@@ -250,8 +254,7 @@ PWM信号是一种频率固定的脉冲宽度调制信号，脉冲宽度承载�
 
   #include <BlueFi.h>
   void setup() {
-    bluefi.redLED.off();
-    bluefi.whiteLED.off();
+    bluefi.begin();  // initialize to BlueFi (redLED, whiteLED, speak, ..)
   }
 
   uint16_t notes[8] =    {NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0,   NOTE_B3, NOTE_C4};
@@ -276,7 +279,7 @@ PWM信号是一种频率固定的脉冲宽度调制信号，脉冲宽度承载�
     }
   }
 
-这个示例中，第7～8行分别定义旋律的8个音符和每个音符的持续时间(0音符代表休止符)；第9～10行分别定义旋律的8个MIDI号和分拍数(1拍、2分拍、4分拍、..)；
+这个示例中，第6～7行分别定义旋律的8个音符和每个音符的持续时间(0音符代表休止符)；第8～9行分别定义旋律的8个MIDI号和分拍数(1拍、2分拍、4分拍、..)；
 在主循环程序中，侦测A按钮和B按钮的状态，当A按钮按下时播放音符和持续时间格式定义的旋律，当B按钮按下时播放MIDI号和分拍数格式定义的旋律。
 适当保持音符的播放间隔可以让我们更清晰地识别组成旋律的音符，我们在播放每一个音符之后插入一个1.2倍音符播放时间的延迟(可以理解为休止符)。
 

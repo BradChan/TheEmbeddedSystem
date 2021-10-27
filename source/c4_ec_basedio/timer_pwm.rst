@@ -17,11 +17,11 @@ PWM(脉冲宽度调制)信号是一种可实现连续信号控制效果的数字
   led = PWMOut(board.WHITELED, frequency=1000, duty_cycle=0)
 
   while True:
-    for i in range(100):
-      if i < 50:
-        led.duty_cycle = int(i * 2 * 65535 / 100)  # Up
+    for i in range(200):
+      if i < 100:
+        led.duty_cycle = int(i * 65535 / 100)  # Up
       else:
-        led.duty_cycle = 65535 - int((i - 50) * 2 * 65535 / 100)  # Down
+        led.duty_cycle = 65535 - int((i - 100) * 65535 / 100)  # Down
       time.sleep(0.01)
 
 当BlueFi执行这个示例脚本程序时，将会观察到白色LED指示灯的亮度“渐灭-渐亮-渐灭-..”循环变化。然后将第4行的“frequency”选项的值分别修改为50、

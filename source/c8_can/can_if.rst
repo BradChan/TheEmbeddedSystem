@@ -17,7 +17,7 @@
 车用级别的嵌入式系统涉及人身安全且运行环境恶略(如电磁辐射、浪涌电流冲击、静电放电，以及高温、低温、长时间连续运行等)，半导体行业有专门的“车规级”/“汽车级”标准。
 上图中标注的“低速CAN总线”和“高速CAN总线”将在下一节的内容中解释，我们在这里只需要知道汽车控制系统的网络分为多种层次。
 
-CAN总线经历数十年的发展已经形成稳定的软硬件设计模型[1]。图8.13是参照CAN总线协议栈的CAN网络节点的硬件设计模型。
+CAN总线经历数十年的发展已经形成稳定的软硬件设计模型 [1]_ 。图8.13是参照CAN总线协议栈的CAN网络节点的硬件设计模型。
 
 .. image:: ../_static/images/c8/cannode_hardware_design_model_vs_canbus_protocol.jpg
   :scale: 30%
@@ -55,13 +55,13 @@ CAN总线驱动器也有很多种型号，大多数半导体制造商都有CAN�
 
 图8.15  CAN网路节点的硬件设计示例：BlueFi-CAN拓展板
 
-在图8.15所示的设计示例中，使用兼容CAN2.0B的独立CAN协议控制器IC——MCP2515，该协议控制器的详细资料链接都页面[2]，在页面[3]将会看到更多中CAN2.0B和CAN FD的独立协议控制器，
-对于我们的目的选择使用那种CAN协议控制器并无本质区别，但是作为量产的CAN网络节点产品来说，建议使用兼容CAN FD标准的控制器更为合理。
-MCP2515的内部结构参加图8.16。
+在图8.15所示的设计示例中，使用兼容CAN2.0B的独立CAN协议控制器IC——MCP2515，该协议控制器的详细资料链接见页面 [2]_ 。在页面 [3]_ 将会看到更多中CAN2.0B和CAN FD的独立协议控制器，
+对于我们的目的选择使用那种CAN协议控制器并无本质区别，但是作为量产的CAN网络节点产品来说，建议使用兼容CAN FD标准的控制器更为合理。MCP2515的内部结构参加图8.16。
+
 考虑BlueFi的40P扩展接口仅有3.3V供电电源，而且所有功能扩展接口的逻辑电平电压都采用3.3V，独立的CAN协议控制器MCP2515是一种宽工作电压的IC(允许2.7~5.5V)，
 我们可以使用BlueFi的40P扩展接口上的3.3V和GND为其供电，那么CAN总线收发器与CAN协议控制器之间的逻辑接口电压也必须采用3.3V的，
 如果CAN总线收发器的工作电压也采用3.3V，意味着我们的CAN接口拓展板采用3.3V单工作电源，这样的设计更为简化。
-在页面[4]中我们能找到很多种CAN总线收发器，SN65HVD230是价格较低的一种支持3.3V供电的CAN总线收发器。
+在页面 [4]_ 中我们能找到很多种CAN总线收发器，SN65HVD230是价格较低的一种支持3.3V供电的CAN总线收发器，其详细资料见页面 [5]_ 。
 
 .. image:: ../_static/images/c8/cannode_hardware_design_mcp2515_structure.jpg
   :scale: 45%
@@ -117,9 +117,9 @@ STM32F1xx/4xx(来自ST半导体)等片上都有1个或2个独立的CAN协议控�
 参考文献：
 ::
 
-  [1] https://www.ti.com/lit/pdf/sloa101
-  [2] https://www.microchip.com/wwwproducts/en/MCP2515
-  [3] https://www.microchip.com/ParamChartSearch/Chart.aspx?branchID=1939
-  [4] https://www.ti.com/interface/can-lin-transceivers-sbcs/overview.html
-  [5] https://www.ti.com/document-viewer/SN65HVD230/datasheet/features-slos3463030#SLOS3463030
+..  [1] https://www.ti.com/lit/pdf/sloa101
+..  [2] https://www.microchip.com/wwwproducts/en/MCP2515
+..  [3] https://www.microchip.com/ParamChartSearch/Chart.aspx?branchID=1939
+..  [4] https://www.ti.com/interface/can-lin-transceivers-sbcs/overview.html
+..  [5] https://www.ti.com/document-viewer/SN65HVD230/datasheet/features-slos3463030#SLOS3463030
 

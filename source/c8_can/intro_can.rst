@@ -5,7 +5,7 @@
 CAN总线是一种异步串行通讯低层网络。对照OSI模型，CAN总线规范仅包含物理层和数据链路层的标准。然而，构建在CAN总线之上的应用层协议(即OSI模型的高层协议)有多种，
 譬如针对汽车控制领域和工业控制领域的CANopen协议、针对工业控制领域的DeviceNet协议、针对公交车和卡车控制领域的SAE J1939协议、针对轻型电动汽车领域的EnergyBus协议等。
 
-CAN总线最初由著名的汽车零部件供应商——德国Bosch于1983年制定的，1986年国际汽车工程师协会(SAE)大会上正式公开发布，1991年使用CAN总线的首台汽车——奔驰W140正式推出[1]。
+CAN总线最初由著名的汽车零部件供应商——德国Bosch于1983年制定的，1986年国际汽车工程师协会(SAE)大会上正式公开发布，1991年使用CAN总线的首台汽车——奔驰W140正式推出 [1]_ 。
 2020年国际CAN大会(iCC)上启动CAN XL(被称为第三代CAN)标准，CAN总线已经历近40年的发展，在汽车控制领域CAN总线仍被广泛使用。CAN总线为什么能够得到广泛认可呢？
 
 CAN总线具有以下几个特点：
@@ -30,7 +30,7 @@ CAN总线的数据帧是面向二进制位编码的结构化位流，每个数�
   :scale: 30%
   :align: center
 
-图8.1  CAN2.0A数据帧(位流)和物理层CAN_HI和CAN_LO信号之间关系示意图[1]
+图8.1  CAN2.0A数据帧(位流)和物理层CAN_HI和CAN_LO信号之间关系示意图 [1]_
 
 在图8.1中，假设某个CAN总线节点发出一个数据帧，其中帧ID=0x014且仅1个字节的数据0x01，这个完整的CAN总线数据帧由55个二进制位组成，
 并结构化为8个信息域，其中绿色、黄色和红色背景的三个信息域分别是仲裁域(即信息ID)、控制域(指定信息域长度)和数据域(帧数据)，
@@ -78,7 +78,7 @@ CAN总线收发器的结构原理如图8.3所示，与标准差分信号驱动�
 在原理上收发环路允许CAN总线节点的CAN协议控制器能够侦测每一个数据位是否发送成功，但在高速CAN网络中必须考虑信号在双绞线上传输延迟，
 譬如B节点发送隐性位ID[6]时，远端的A节点正好发送显性位ID[6]，B节点收发器的接收环路收到显性位‘0’的延迟与两个节点的传输线长度有关。
 按照5ns/m的传输延迟来估算，1000m长度的双绞线引起的信号延迟约5us！这意味着长传输线的CAN网络必须采用很低的波特率(虽然CAN2.0支持1Mbps)。
-此外，CAN总线收发器也会有一定的传输延迟，需要根据每个型号的收发器来确定。图8.4给出CAN总线波特率与网络节点个数(QUANTA)、网络传输线长度之间的关系图线[2]。
+此外，CAN总线收发器也会有一定的传输延迟，需要根据每个型号的收发器来确定。图8.4给出CAN总线波特率与网络节点个数(QUANTA)、网络传输线长度之间的关系图线 [2]_ 。
 
 .. image:: ../_static/images/c8/canbus_baudrate_vs_bus_length.jpg
   :scale: 30%
@@ -139,7 +139,7 @@ CAN总线上的所有CAN节点(包括发送者自己)都能接收到该消息，
 现在看起来，使用CAN总线组网是非常容易的，尤其使用CAN总线传输系统应用层的数据信息几乎不消耗MCU的存储资源和CPU时间。但是，CAN总线并不是实时网络，
 一个节点的消息被成功地发送和接收的时间是不确定的，尤其CAN总线上多个节点之间的数据传输非常频繁时，某些低优先级的消息可能会传输失败。
 虽然RS485总线、ModBus等协议构建的主从网络采用主机轮询各从机的效率比较低，但借助于固定周期的从机轮询机制可以确保数据传输的实时性。
-关于CAN总线的数据传输延迟，不同的CAN网络环境的总线竞争和仲裁周期、数据帧传输失败的概率等理论计算和实践验证请参考[3]的第4章。
+关于CAN总线的数据传输延迟，不同的CAN网络环境的总线竞争和仲裁周期、数据帧传输失败的概率等理论计算和实践验证请参考 [3]_ 的第4章。
 
 我们在本节中所了解的多主或无主网络架构的CAN总线节点对总线占用权的竞争和仲裁方案被称作CSMA/CA，即载波侦听多路访问/碰撞避免。这个方案与多主网络架构的以太网的碰撞侦测方案十分相似，
 在IEEE 802.3标准中使用CSMA/CD(即载波侦听多路访问/碰撞侦测)和随机避退算法的方案解决以太网节点之间的碰撞。但是，CSMA/CA和CSMA/CD具有本质的区别，
@@ -160,8 +160,8 @@ CAN协议控制器将发出总线错误信息。
 参考文献：
 ::
 
-  [1] https://en.wikipedia.org/wiki/CAN_bus
-  [2] http://inst.cs.berkeley.edu/~ee249/fa08/Lectures/handout_canbus2.pdf
-  [3] Marco Di Natale, Haibo Zeng, Paolo Giusto, and Arkadeb Ghosal, Understanding and Using the Controller Area Network Communication Protocol: Theory and Practice, Springer, 2012 
+..  [1] https://en.wikipedia.org/wiki/CAN_bus
+..  [2] http://inst.cs.berkeley.edu/~ee249/fa08/Lectures/handout_canbus2.pdf
+..  [3] Marco Di Natale, Haibo Zeng, Paolo Giusto, and Arkadeb Ghosal, Understanding and Using the Controller Area Network Communication Protocol: Theory and Practice, Springer, 2012 
 
 

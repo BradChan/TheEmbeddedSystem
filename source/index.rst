@@ -23,7 +23,6 @@
   :align: center
 
 
-
 .. image::  _static/images/ecs_foreward.jpg
   :scale: 40%
   :align: center

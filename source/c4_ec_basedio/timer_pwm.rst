@@ -95,7 +95,7 @@ Arduino平台的软件架构上已经将每一种开源板的PWM信号频率进�
 PWM信号的频率受PWM模块的时钟频率、分频器和计数器的范围等三个参数约束。譬如，nRF52840的PWM模块时钟频率为16MHz，分频器可选择1/2/4/8/16/32/64/128-分频，
 计数器的范围3～32767(即可设置最大的二进制位宽度是15)。如果选择1分频，即16MHz时钟为计数器工作时钟(即时钟周期为62.5ns)，使用8位的计数器分辨率时
 的PWM信号周期为16微秒(=256*62.5ns)，12位时的PWM信号周期为256微秒，15位时的PWM信号周期为2.048ms。这些参数可在nRF52840数据页的PWM相关的寄存器说明部分查询到。
-按第3.5节所搭建的兼容Arduino开源平台的软件开发环境中，PWM信号发生器相关的接口在“../Arduino15/packages/adafruit/hardware/nrf52/0.20.5/cores/nRF5”文件夹中，
+按第3.5节所搭建的兼容Arduino开源平台的软件开发环境中，PWM信号发生器相关的接口在“../Arduino15/packages/adafruit/hardware/nrf52/0.20.0/cores/nRF5”文件夹中，
 设计“wiring_analog.h”、“wiring_analog.cpp”、“HardwarePWM.h”和“HardwarePWM.cpp”四个文件，PWM初始化部分在“HardwarePWM.cpp”的“begin()”中。
 
 下面我们来修改第4.1节所创建的LED类的实现代码，增加LED亮度控制接口，使用PWM信号发生器控制LED亮度，从而了解Arduino开源平台上的PWM编程控制。

@@ -75,7 +75,7 @@ PWM信号是一种频率固定的脉冲宽度调制信号，脉冲宽度承载�
 
 在Arduino开源平台上，“tone(pin, frequency, duation)”和“noTone(pin)”两个函数用于在指定I/O引脚输出指定频率的方波信号 [1]_ ，这两个函数的实现优先选择使用MCU片上的专用PWM功能单元，
 对于无专用PWM功能单元的MCU则选择片上通用定时器和中断程序的方法。这两个函数的实现代码在“../Arduino15/packages/hardware/mcu/version/cores/”文件夹的“Tone.h”和“Tone.cpp”中，
-这个路径中的“/mcu”和“/version”分别指的是兼容Arduino平台软件包的MCU系列和软件版本号。对于第3.5节安装的nRF52系列软件包，该路径为“../Arduino15/packages/hardware/nRF52/0.20.5/cores/”。
+这个路径中的“/mcu”和“/version”分别指的是兼容Arduino平台软件包的MCU系列和软件版本号。对于第3.5节安装的nRF52系列软件包，该路径为“../Arduino15/packages/hardware/nRF52/0.20.0/cores/”。
 
 将下面的示例代码复制-粘贴到Arduino IDE中，编译并下载到BlueFi，可以测试“tone(pin, frequency, duation)”和“noTone(pin)”两个函数：
 
@@ -387,5 +387,3 @@ BlueFi的Python解释器本身并没有声音输出接口，我们使用上述�
 
 .. [1] https://www.arduino.cc/reference/en/language/functions/advanced-io/tone/
 .. [2] https://www.arduino.cc/en/Tutorial/ToneMelody?from=Tutorial.Tone
-
-

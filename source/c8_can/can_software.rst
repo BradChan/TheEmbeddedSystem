@@ -29,12 +29,12 @@ IoT模块使用BlueFi的P13~P15等3个引脚分别作为SPI接口的SCK、MISO�
 
 再下载下面的压缩包，即“CAN_MCP2515.zip”文件，然后将该压缩包解压到“../Documents/Arduino/libraries/”文件夹中，
 
-. :download:`本节内容所用到的BlueFi的BSP源文件 <../_static/dl_files/bluefi_ch8_4/CAN_MCP2515.zip>`
+. :download:`Arduino平台的MCP2515库文件 <../_static/dl_files/bluefi_ch8_4/CAN_MCP2515.zip>`
 
-接着下载下面的压缩包，即“bluefi_nrf52840.zip”文件，然后将该压缩包解压到RF52的Arduino安装路径，
+接着下载下面的压缩包，即“bluefi_nrf52840.zip”文件，其中的两个文件是BlueFi在Arduino平台的引脚定义，将该压缩包解压到RF52的Arduino安装路径的变种文件夹，
 即“../Arduino/packages/adafruit/hardware/nrf52/0.21.0/variants/”文件夹，并覆盖该文件夹中已有的“bluefi_nrf52840”文件夹，
 
-. :download:`本节内容所用到的BlueFi的BSP源文件 <../_static/dl_files/bluefi_ch8_4/bluefi_nrf52840.zip>`
+. :download:`BlueFi的兼容Arduino的引脚定义文件 <../_static/dl_files/bluefi_ch8_4/bluefi_nrf52840.zip>`
 
 上述3个压缩包分别是BlueFi的BSP文件、CAN总线接口库文件(使用MCP2515)和BlueFi的兼容Arduino的引脚定义文件，
 直接使用这些源文件可以快速搭建BlueFi和IoT扩展板的CAN总线通讯测试环境，当然你也可以自行修改这些源码以及对应的示例程序实现其他功能。
@@ -323,7 +323,7 @@ MCP2515仅有2个mask寄存器其编号分别为0和1，6个filter寄存器的�
 
 在使用BlueFi、IoT模块和Python语言实现CAN总线通讯之前，请下载下面的压缩包到本地电脑上，这是MCP2515的Python库源码文件，
 
-. :download:`本节内容所用到的BlueFi的BSP源文件 <../_static/dl_files/bluefi_ch8_4/hiibot_mcp2515.zip>`
+. :download:`mcp2515的Python库源码文件 <../_static/dl_files/bluefi_ch8_4/hiibot_mcp2515.zip>`
 
 解压后请将整个库文件夹拖放到CIRCUITPY磁盘的lib文件夹中，即“/CIRCUITPY/lib/”。然后打开“/CIRCUITPY/lib/hiibot_mcp2515/”文件夹，
 可以看到4个“.py”后缀的文件，包括“mcp2515.py”、“canio.py”、“can_timer.py”等，这些都是脚本源码，允许我们使用任意文本编辑器修改这些库文件。
@@ -568,8 +568,18 @@ MCP2515仅有2个mask寄存器其编号分别为0和1，6个filter寄存器的�
 
 当我们使用几个BlueFi和IoT模块将上面问题模拟解决之后，相信你一定能够发现CAN总线的更多的应用场景，虽然我们在基于CAN总线的底层操作接口来解决这些问题破费周章。
 我们在本章第一节已经提到，CAN总线的国际标准ISO 11898仅仅是低层网络标准，截止目前我们也仅仅遵循这些标准的一部分了解CAN2.0A/B的相关软硬件接口。
+<<<<<<< HEAD
+<<<<<<< HEAD
+那么CAN总线的高层网络标准又是什么样的呢？目前有很多种CAN总线的高层网络标准应用于不同的领域，譬如CANopen [2]、DeviceNet、SAE J1939和ODB2(在板诊断接口)等标准。
+这些高层网络标准都是基于低层网络标准，且仅仅是为了统一用户层的通讯接口，以确保所有兼容CANopen等同类高层网络标准的网络节点能够共享同一个网络相互通讯、相互操作，
+=======
 那么CAN总线的高层网络标准又是什么样的呢？目前有很多种CAN总线的高层网络标准应用于不同的领域，譬如CANOpen [2]、DeviceNet和SAE J1939等标准。
 这些高层网络标准都是基于低层网络标准，且仅仅是为了统一用户层的通讯接口，以确保所有兼容CANOpen等同类高层网络标准的网络节点能够相互通讯，
+>>>>>>> parent of 9da4b21 (update ch8_4)
+=======
+那么CAN总线的高层网络标准又是什么样的呢？目前有很多种CAN总线的高层网络标准应用于不同的领域，譬如CANOpen [2]、DeviceNet和SAE J1939等标准。
+这些高层网络标准都是基于低层网络标准，且仅仅是为了统一用户层的通讯接口，以确保所有兼容CANOpen等同类高层网络标准的网络节点能够相互通讯，
+>>>>>>> parent of 9da4b21 (update ch8_4)
 这样的兼容性很容易在同一个行业内实施，并为行业的产品制造商和供应商带来很多益处。
 
 .. image:: ../_static/images/c8/canbus_canopen_protocol.jpg
@@ -585,17 +595,54 @@ MCP2515仅有2个mask寄存器其编号分别为0和1，6个filter寄存器的�
 
 CANOpen协议要求CAN总线上的每个节点都有惟一的识别码(ID)，而且节点识别码本身也是一种对象。而且兼容CANOpen协议的设备节点分为主节点和从节点两类，
 主节点可以发起网络管理帧，包括对所有从节点的启动、停止、暂停、继续等操作指令，但从节点无需应答。主节点也可以使用从节点的惟一识别码发起一对一的问答型通讯，
+<<<<<<< HEAD
+<<<<<<< HEAD
+常用操作就是读取或设置某个节点上的对象的值，这种操作的协议帧的ID由4位命令码和7位从节点识别码组成(在CANopen协议中称作COB-ID，即通讯对象ID)，
+8字节数据域中首个字节是命令码(包括读/写单字节/双字/四字节等6种操作的命令)，第2和3字节是对象的索引，第4字节是对象的子索引，其余的4个字节则是对象的值，
+对于读操作来说这4个字节都是0。虽然CANopen协议帧包含更多个信息域，但他们仍包含在标准CAN数据帧的ID和数据域中。此外，ACANopen协议不支持远程请求帧。
+想要详细地掌握CANopen协议，建议阅读 [4]，该参考书对CAN总线和构建于CAN总线之上的CANopen协议的工作机制做了详细地阐述。
+=======
 常用操作就是读取或设置某个节点上的对象的值，这种操作的协议帧的ID由4位命令码和7位从节点识别码组成(在CANOpen协议中称作COB-ID)，
 8字节数据域中首个字节是命令码(包括读/写单字节/双字/四字节等6种操作的命令)，第2和3字节是对象的索引，第4字节是对象的子索引，其余的4个字节则是对象的值，
 对于读操作来说这4个字节都是0。虽然CANOpen协议帧包含更多个信息域，但他们仍包含在标准CAN数据帧的ID和数据域中。此外，ACANOpen协议不支持远程请求帧。
+>>>>>>> parent of 9da4b21 (update ch8_4)
+=======
+常用操作就是读取或设置某个节点上的对象的值，这种操作的协议帧的ID由4位命令码和7位从节点识别码组成(在CANOpen协议中称作COB-ID)，
+8字节数据域中首个字节是命令码(包括读/写单字节/双字/四字节等6种操作的命令)，第2和3字节是对象的索引，第4字节是对象的子索引，其余的4个字节则是对象的值，
+对于读操作来说这4个字节都是0。虽然CANOpen协议帧包含更多个信息域，但他们仍包含在标准CAN数据帧的ID和数据域中。此外，ACANOpen协议不支持远程请求帧。
+>>>>>>> parent of 9da4b21 (update ch8_4)
 
 CANOpen协议并不涉及CAN总线通讯的硬件和传输控制，仅仅是对兼容CANOpen设备上的资源使用对象及其字典进行管理，主节点使用CANOpen协议帧来访问从节点上的对象，
 如果我们将前面的3-DoF机械臂的主控制器和关节马达控制器设计成兼容CANOpen协议的节点，那么解决上面的问题会变得更容易。
 我们将每个关节马达控制器的惟一识别码(譬如分别设置为1~3)、节点上关节角位移的设定值和实际值、节点上关节角速度的设定值和实际值等等都设计成对象，
 并指定每个对象的索引和子索引值，那么主控制器通过写“关节角位移的设定值”，关节马达控制器根据角位移的设定值和实际值之间偏差等参数来控制关节马达的运动。
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+CANopen等高层网络协议标准的目标是提升行业内设备之间的兼容性和互联能力，还能大大地简化用户层应用程序的开发。这些CAN总线的高层协议标准可以通过互联网搜索引擎查阅到，限于篇幅不再赘述。
+
+截至目前，我们所介绍的CAN总线和CAN节点设备仅仅是局域网的范畴内，网络节点并不能与外网连接。CAN总线仅适合工业领域的设备层，以及汽车ECU单元互联和机器人关节单元互联，
+借助于CAN-Ethernet、CAN-WiFi、CAN-4G/5G等网关，这些基于CAN总线的系统仍可以连接到互联网(如云服务端)。图8.24以车辆为例给出CAN总线、CAN-4G/5G网关、
+云服务、车辆运行和状态监测终端等设备之间的关系。
+
+.. image:: ../_static/images/c8/can_iot_digital_twin.jpg
+  :scale: 20%
+  :align: center
+
+图8.24  CAN总线、车载CAN-4G/5G网关和IoT在汽车领域的应用
+
+车联网非常适合使用蜂窝网；对于安装在室内的机械臂或在有限范围内移动机器人来说，使用WiFi联网不仅流量成本低，大多数场合的WiFi网速或许比蜂窝网更快；
+固定在电器柜或嵌在工业设备内部的工业控制器，无线通讯都是很难实施的，使用Ethernet连接到互联网是最佳选择。CAN-Ethernet、CAN-WiFi、
+CAN-4G/5G等网关的共同特点：一端与CAN总线连接，另一端通过互联网(万维网)连接到云服务端，网关能够监听CAN总线所有节点的状态和控制信息(譬如车辆的位置、
+行驶速度、油门位置、刹车状态等)并写入云服务端的数据库中，网关还能够通过云服务平台与车主的手机App交互并接收车辆控制指令(譬如开启空调、打开/关闭车窗等)转发给车辆中控系统。
+
+虽然CAN总线不能与外网直接连接，借助于网关我们依然将CAN总线所连接的系统接入互联网来实现IoT。
+=======
+=======
+>>>>>>> parent of 9da4b21 (update ch8_4)
 CANOpen等高层网络协议标准的目标是提升行业内设备之间的兼容性和互联能力，还能大大地简化用户层应用程序的开发。
 这些CAN总线的高层协议标准可以通过互联网搜索引擎查阅到，限于篇幅不再赘述。
+>>>>>>> parent of 9da4b21 (update ch8_4)
 
 -------------------------
 
@@ -604,4 +651,12 @@ CANOpen等高层网络协议标准的目标是提升行业内设备之间的兼�
 
   [1] https://docs.python.org/3/library/struct.html
   [2] https://www.can-cia.org/groups/specifications/
+<<<<<<< HEAD
+<<<<<<< HEAD
+  [3] https://en.wikipedia.org/wiki/CANopen
+  [4] Pfeiffer Olaf,  A. Ayre, and C. Keydel, Embedded Networking with CAN and CANopen, Copperhill Media Corporation, 2008
+=======
+>>>>>>> parent of 9da4b21 (update ch8_4)
+=======
+>>>>>>> parent of 9da4b21 (update ch8_4)
 

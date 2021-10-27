@@ -22,16 +22,12 @@
   :scale: 25%
   :align: center
 
----------------------------------------------
-
 
 
 .. image::  _static/images/ecs_foreward.jpg
   :scale: 40%
   :align: center
 
-
----------------------------------------------
 
 .. toctree::
    :maxdepth: 2
@@ -92,7 +88,6 @@
 
    ca_bbniot/index_c10.rst
 
---------------------------------------------------
 
 .. toctree::
    :maxdepth: 2
